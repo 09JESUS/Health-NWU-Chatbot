@@ -1,0 +1,62 @@
+// Define symptoms and their potential causes
+const symptoms = {
+    headache: ["stress", "dehydration", "tension", "sinusitis"],
+    fever: ["infection", "virus", "inflammation", "heat stroke"],
+    cough: ["cold", "flu", "allergies", "asthma"]
+    // Add more symptoms and their causes as needed
+};
+
+// Function to extract symptoms from user input
+function extractSymptoms(text) {
+    const identifiedSymptoms = [];
+    
+    // Check each symptom for mentions in the text
+    Object.keys(symptoms).forEach(symptom => {
+        const regex = new RegExp(`\\b${symptom}\\b`, 'i');
+        if (regex.test(text)) {
+            identifiedSymptoms.push(symptom);
+        }
+    });
+    
+    return identifiedSymptoms;
+}
+
+// Function to find cause associated with a symptom in user input
+function findCause(symptom, text) {
+    if (symptoms.hasOwnProperty(symptom)) {
+        // Check each cause for the symptom in the text
+        for (let cause of symptoms[symptom]) {
+            const regex = new RegExp(`\\b${cause}\\b`, 'i');
+            if (regex.test(text)) {
+                return cause;
+            }
+        }
+    }
+    return null;
+}
+
+// Function to handle user input and generate response
+function handleInput(userInput) {
+    userInput = userInput.toLowerCase();
+    
+    // Extract symptoms mentioned in the user input
+    const identifiedSymptoms = extractSymptoms(userInput);
+    
+    if (identifiedSymptoms.length > 0) {
+        const symptom = identifiedSymptoms[0]; // For simplicity, take the first identified symptom
+        const cause = findCause(symptom, userInput);
+        
+        if (cause) {
+            return `The cause of ${symptom} could be ${cause}. Please consult a healthcare professional for further evaluation.`;
+        } else {
+            return `I'm not sure about the cause of ${symptom}. It's recommended to consult a healthcare professional for accurate diagnosis.`;
+        }
+    } else {
+        return "I'm sorry, I couldn't identify any specific symptoms in your input. Please provide more details or consult a healthcare professional.";
+    }
+}
+
+// Example usage
+const userInput = "I have a headache it's been three days now, what could be the cause?";
+const response = handleInput(userInput);
+console.log("Bot:", response);

@@ -1,0 +1,1037 @@
+/* Styles for both light and dark mode */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    transition: background-color 0.3s ease; /* Smooth transition for background change */
+    background-color: #f0f0f0; /* Light mode background */
+    color: #333; 
+}
+
+.chat-ended-message {
+    display: block;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: transparent;
+    color: #000000;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+
+.container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.sidebar {
+    width: 25%;
+    background-color: #e1e1e1; /* Light mode sidebar background */
+    padding: 20px;
+    color: #333;
+}
+
+.sidebar h2 {
+    color: #555;
+}
+
+.back {
+    display: inline-block;                
+    cursor: pointer;            
+    padding: 10px;              
+    border-radius: 5px;          
+    transition: background-color 0.3s; 
+    background-color: transparent;
+    margin-bottom: 20px;
+}
+
+.back:hover {
+    background-color: #f0f0f0;   
+
+}
+
+.back i {
+    font-size: 24px;            
+    color: #333;                 
+}
+
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0; /* Light mode user item background */
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth background transition */
+    position: relative;
+    top: 50px; /* Move it down */
+}
+
+.user-item:hover {
+    background-color: #e0e0e0;
+}
+
+.user-name {
+    font-size: 16px;
+}
+
+.status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.status.online {
+    background-color: #4caf50;
+}
+
+.status.offline {
+    background-color: #f44336;
+}
+
+.chat-area {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f0f0f0; /* Light mode chat area background */
+    border-left: 1px solid #ddd;
+}
+
+.chat-header {
+    background-color: #e1e1e1; /* Light mode chat header background */
+    color: #333;
+    padding: 20px;
+    text-align: center;
+    display: block;
+}
+
+.chat-history {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #e8e8e8; /* Light mode chat history background */
+}
+
+.chat-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.chat-message.agent {
+    background-color: #ccc; /* Light mode agent message background */
+    text-align: right;
+}
+
+.chat-message.user {
+    background-color: #d0cfcf; /* Light mode user message background */
+    text-align: left;
+}
+
+.message {
+    margin: 0;
+}
+
+.chat-input {
+    display: flex;
+    padding: 20px;
+    background-color: #e1e1e1; /* Light mode chat input background */
+    border-top: 1px solid #ccc;
+}
+
+.chat-input textarea {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    resize: none;
+    background-color: #fff; /* Light mode textarea background */
+    color: #333;
+    transition: background-color 0.3s ease; /* Smooth transition for background change */
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    background-color: #e1e1e1; /* Light mode button background */
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for background change */
+}
+
+.chat-input button:hover {
+    background-color: #ccc; /* Light mode options hover background */
+}
+
+.options-container {
+    display: flex;
+    gap: 6px; /* Adjust gap between options */
+    background: none; /* No background */
+    border: none; /* No border */
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.Options {
+    padding: 10px 20px;
+    background-color: #e1e1e1;
+    color: #333;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for background change */
+}
+
+.Options:hover {
+    background-color: #d8d8d8;
+}
+
+.mode-options {
+    width: 120px;
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    position: absolute;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    z-index: 1000;
+}
+
+.mode-options.active {
+    display: flex; /* Display when active */
+}
+
+.mode-options .mode-option {
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-options .mode-option:hover, 
+.mode-options .mode-option.active {
+    background: #eee;
+    border-radius: 15px; /* Ensure border radius remains on hover */
+}
+
+
+.profile-btn {
+    position: fixed;
+    top: 30px;
+    right: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #90c5ff;
+    color: white;
+    padding: 10px;
+    border-radius: 80px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.profile-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+.profile-btn i {
+    font-size: 24px; /* Adjust icon size as needed */
+}
+
+
+.profile-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007bff; /* Background color */
+    color: white; /* Text color */
+    padding: 20px; /* Adjust padding as needed */
+    border-top-left-radius: 30px; /* Rounded corners */
+    border-top-right-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle effect */
+    font-size: 30px; /* Font size */
+    font-weight: bold; /* Bold text */
+    white-space: nowrap; /* Prevent text wrapping */
+    width: 100%; /* Background spans full width */
+    transform: translateX(80px)translateY(-40px);
+}
+
+.profile-heading span {
+    margin: 0 auto; /* Center align text */
+    max-width: 90%; /* Maximum width of the heading */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis (...) if text overflows */
+    white-space: nowrap; /* Prevent wrapping */
+    padding-top: 10px;
+}
+
+.profile-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1002;
+    display: none;
+    width: 80%;
+    max-width: 500px;
+    height: 60;
+    padding-top: 0px;
+}
+
+.default-icon{
+    display: none;
+}
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 40px;
+    transform: translateX(-80px);
+}
+
+.profile-content h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.profile-content p {
+    color: #666;
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.profile-content button {
+    padding: 12px 25px;
+    background-color: #5d93c1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transform: translateX(65px);
+}
+
+.profile-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.profile-details {
+    text-align: left;
+    flex: 1;
+    order: 2; /* Place the details on the right */
+    transform: translateX(60px);
+}
+
+.profile-icon {
+    /* Adjust icon size and color as needed */
+    font-size: 60px;
+    color: #007bff;
+    flex-shrink: 0;
+    order: 1; /* Place the icon on the left */
+    transform: translateX(40px);
+    display: flex;
+    transform: translateX(150px);
+    display: flex;
+    width: 60%;
+}
+
+  
+  #upload-button:hover {
+    background-color: #0056b3; /* New background color on hover */
+  }
+  /* Position After Upload */
+  #upload-button.uploaded {
+    transform: translateX(0px)translateY(260px); 
+  }
+
+#change-details-btn:hover {
+    background-color: #0056b3; /* New background color on hover */
+}
+
+
+#uploaded-image {
+    width: 60%; /* Adjust as needed */
+    height: 250px; /* Adjust as needed */
+    border-radius: 10px; /* Adjust as needed */
+    display: none; /* Initially hidden */
+    transform: translateX(-40px);
+}
+
+#image-upload {
+ /* Hide the file upload input */
+ transform: translateY(1000px);
+ display: none;
+}
+
+#upload-button {
+    padding: 10px 20px;
+    background-color: #5d93c1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+    height: 17px;
+    margin-right: 60px;
+    transform: translateX(-15px);
+}
+
+.update-details-btn{
+    display: none;
+}
+
+#update-details-btn {
+    background-color: #0056b3; /* New background color on hover */
+  }
+
+#update-details-btn:hover {
+    background-color: #4CAF50; /* Different color for Update button */
+}
+  
+.hidden2 {
+    display: none;
+}
+
+
+
+.close-profile-btn {
+    display: inline-block;
+    cursor: pointer;
+    /* background-color: #ccc; */
+    color: #333;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    /* border-radius: 50%; */
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    transform: translateX(-15px);
+    z-index: 10;
+    position: relative;
+    font-weight: bold;
+    font-size: 40px;
+}
+
+
+
+
+.close-request-btn {
+    display: inline-block;
+    cursor: pointer;
+    background-color: transparent;
+    color: #333;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 30px;
+    transition: background-color 0.3s ease;
+    z-index: 1002;
+    position: relative;
+    transform: translateY(-20px)translateX(60px);
+}
+
+.fas.fa-close {
+    font-size: 30px; /* Adjust size as needed */
+    color: #333; /* Icon color */
+    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+.fas.fa-close:hover {
+    color: #ccc; /* Hover color */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+#image-upload {
+    transform: translateY(1000px);
+    display: none;
+}
+
+
+
+
+#upload-button {
+    padding: 10px 20px;
+    background-color: #5d93c1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+    height: 17px;
+    margin-right: 60px;
+    transform: translateX(-15px);
+}
+
+#change-details-btn:hover {
+    background-color: #4682b4; /* Light mode hover background */
+}
+
+#upload-button:hover {
+    background-color: #4682b4; /* Light mode hover background */
+}
+
+.Alert {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent; /* Alert background color */
+    color: #333; /* Alert text color */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 50%;
+    transition: transform 0.3s ease-in-out; /* Add smooth transition */
+}
+
+.Alert .fa {
+    margin-right: 10px; /* Increased margin for icon */
+    font-size: 80px; /* Adjusted icon size */
+}
+
+.Alert:hover{
+    transform: scale(1.2); /* Enlarge the alert icon */
+}
+
+.request-container {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    /* padding: 20px; */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-width: 80%;
+    /* max-height: 80%; */
+    overflow-y: scroll;
+    width: 40%;
+    height: 45%;
+    border-radius: 20px;
+    overflow-x: hidden;
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+}
+
+.request-container::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
+
+.request-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 10px;
+}
+
+.request-item button {
+    padding: 5px 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.request-item button:hover {
+    background-color: #2980b9;
+}
+
+.no-requests-message {
+    font-size: 20px;
+    color: #555;
+    margin-top: 15%; /* Adjust as needed */
+    display: block;
+    transform: translateX(29%)translateY(20px);
+  
+}
+
+.logout {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+    display: none;
+    justify-content: space-between; /* Distribute space between items */
+    align-items: center; /* Align items vertically in the center */
+    /* right: 78%; */
+    top: 22%;
+    background-color: transparent;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.header2{
+    display: flex;
+    justify-content: space-between;
+    background-color: #e8e8e8;
+    padding-bottom: 20px;
+}
+
+.username {
+    display: none;
+    font-size: 18px;
+    margin-right: 20px;
+    margin-top: 10px;
+    text-decoration: underline;
+}
+
+.logout .tooltip {
+    visibility: hidden;
+    width: 100px;
+    background-color: rgb(80 67 67 / 20%);
+    color: #000;
+    /* text-align: center; */
+    border-radius: 5px;
+    padding-left: 15px;
+    position: absolute;
+    z-index: 1;
+     /* Position the tooltip above the icon */
+    left: 350%;
+    margin-left: -50px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.logout:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.fas.fa-door-open {
+    font-size: 22px; /* Adjust size as needed */
+    color: #333; /* Icon color */
+    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+.fas.fa-door-open:hover {
+    color: #ccc; /* Hover color */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.blur {
+    filter: blur(5px); /* Adjust blur strength as needed */
+}
+
+/* Basic styling for the report container */
+.report-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1002;
+    display: none;
+    padding-top: 0px;
+}
+
+.Report-content {
+    display: flex;
+    flex-direction: column;
+    /* padding-top: 40px; */
+}
+
+.report-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #007bff; /* Background color */
+    color: white; /* Text color */
+    padding: 20px; /* Adjust padding as needed */
+    border-top-left-radius: 30px; /* Rounded corners */
+    border-top-right-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle effect */
+    font-size: 30px; /* Font size */
+    /* font-weight: bold; */ /* Bold text */
+    white-space: nowrap; /* Prevent text wrapping */
+    width: 100%; /* Background spans full width */
+    transform: translateX(-20px);
+}
+
+.report-details p{
+    text-decoration: underline;
+
+}
+.submit-report{
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.submit-report:hover{
+    background-color: #218838;
+}
+
+.report-details {
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    resize: none;  /* Prevents resizing of the textarea */
+}
+
+.close-report-btn{
+    display: inline-block;
+    cursor: pointer;
+    background-color: #ccc;
+    color: #333;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 30px;
+    transition: background-color 0.3s ease;
+    transform: translateY(-20px)translateX(60px);
+    z-index: 10;
+    position: relative;
+}
+
+.btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse;
+    transform: translateX(50px);
+
+}
+
+
+.profile-heading2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007bff; /* Background color */
+    color: white; /* Text color */
+    padding: 10px; /* Adjust padding as needed */
+    /* border-top-left-radius: 30px; */ /* Rounded corners */
+    /* border-top-right-radius: 30px; */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle effect */
+    font-size: 30px; /* Font size */
+    white-space: nowrap; /* Prevent text wrapping */
+     /* Background spans full width */
+     /* Added space between translateX and translateY */
+    height: 5vh;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Dark mode specific styles */
+body.dark-mode {
+    background-color: #222; /* Dark mode background */
+    color: #ddd; /* Dark mode text color */
+}
+
+.dark-mode .sidebar {
+    background-color: #1a222f; /* Dark mode sidebar background */
+}
+
+.dark-mode .sidebar h2 {
+    background-color: transparent; /* Dark mode sidebar background */
+    color: #ccc;
+}
+
+.dark-mode .user-item {
+    background-color: transparent; /* Dark mode user item background */
+    color: #ccc;
+}
+
+.dark-mode .user-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .back i{
+    background-color: transparent; /* Dark mode user item background */
+    color: #ccc;
+}
+
+.dark-mode .back:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+.dark-mode .chat-area {
+    background-color: #1c2b40; /* Dark mode chat area background */
+}
+
+.dark-mode .chat-header {
+    background-color: #1a222f; 
+    color: #ccc; /* Dark mode chat header background */
+}
+
+.dark-mode .chat-history {
+    background-color: #2a374a; /* Dark mode chat history background */
+}
+
+.dark-mode .header2{
+    background-color: #2a374a;
+}
+.dark-mode .chat-message.agent {
+    background-color: #354d6e; /* Dark mode agent message background */
+}
+
+.dark-mode .chat-message.user {
+    background-color: #42352f; /* Dark mode user message background */
+}
+
+.dark-mode .chat-input {
+    background-color: #1a222f; /* Dark mode chat input background */
+    border-top: 1px solid #58647d; /* Dark mode chat input border */
+}
+
+.dark-mode .chat-input textarea {
+    background-color: #002222; /* Dark mode textarea background */
+    color: aquamarine; /* Dark mode textarea text color */
+    border: 1px solid #58647d; /* Dark mode textarea border */
+}
+
+.dark-mode .chat-input button {
+    background-color: #1a222f;
+    color: #ccc; /* Dark mode button background */
+}
+
+.dark-mode .chat-input button:hover {
+    background-color: #141439; /* Dark mode button hover background */
+}
+
+.dark-mode .Options {
+    background-color: transparent; /* Dark mode options background */
+    color: #ddd; /* Dark mode options text color */
+}
+
+.dark-mode .Options:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Dark mode options hover background */
+}
+
+.dark-mode .mode-options.active {
+    background-color: #1a222f; /* Dark mode active option background */
+    color: aqua;
+    border: none;
+    box-shadow: 0 2px 8px rgb(255 255 255 / 10%);
+}
+
+.dark-mode .mode-options .mode-option:hover {
+    background-color: #1b2659;
+}
+
+/* Ensure active mode option has correct background color */
+body.light-mode .mode-options .mode-option.active {
+    background-color: #ffffff; /* Light mode active option background */
+}
+
+body.dark-mode .mode-options .mode-option.active {
+    background-color: #354d72; /* Dark mode active option background */
+}
+
+.dark-mode .profile-btn {
+    background-color: #243044;
+    color: #ddd;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .profile-btn:hover {
+    background-color: #141439;
+}
+
+.dark-mode .profile-heading2 {
+    background-color: #333; /* Dark background color */
+}
+
+.dark-mode .profile-heading {
+    background-color: #333; /* Dark background color */
+}
+
+.dark-mode .report-heading {
+    background-color: #333; /* Dark background color */
+}
+
+.dark-mode .profile-heading span {
+    color: white; /* Light text color */
+}
+
+.dark-mode .profile-container {
+    background-color: #222; /* Dark background color */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .report-container {
+    background-color: #222; /* Dark background color */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .profile-content h2 {
+    color: white; /* Light text color */
+}
+
+.dark-mode .profile-content p {
+    color: #ccc; /* Lighter text color */
+}
+
+.dark-mode .close-profile-btn {
+    background-color: #555; /* Darker background color */
+    color: white; /* Light text color */
+}
+
+.dark-mode .close-report-btn {
+    background-color: #555; /* Darker background color */
+    color: white; /* Light text color */
+}
+
+.dark-mode .profile-icon {
+    color: #333;  /* Adjust color for dark mode */
+}
+
+.dark-mode #upload-button {
+    background-color: #555; /* Dark mode button background */
+}
+
+.dark-mode #change-details-btn {
+    background-color: #555; /* Dark mode button background */
+}
+
+.dark-mode .submit-report {
+    background-color: #555; /* Dark mode button background */
+}
+
+.dark-mode #upload-button:hover {
+    background-color: #222; /* Dark background color */
+}
+
+.dark-mode #change-details-btn:hover {
+    background-color: #222; /* Dark background color */
+}
+
+.dark-mode .submit-report:hover {
+    background-color: #222; /* Dark background color */
+}
+
+
+.dark-mode .fas.fa-close {
+    font-size: 30px; /* Adjust size as needed */
+    color: #ccc; /* Hover color */    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+.dark-mode .fas.fa-close:hover {
+
+    color: #333; /* Icon color */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.dark-mode .fas.fa-door-open {
+    font-size: 22px; /* Adjust size as needed */
+    color: #ccc; /* Hover color */    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+.dark-mode .fas.fa-door-open:hover {
+
+    color: #333; /* Icon color */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.dark-mode .Alert{
+    color: #c9ccd9;
+}
+
+.dark-mode .logout .tooltip{
+    background-color: rgb(179 169 169 / 20%);
+    color: #c5c1d0;
+}
+
+.dark-mode .request-container {
+    background-color: #1e1e1e;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .request-item {
+    border: 1px solid #444;
+    background-color: #2c2c2c;
+}
+
+.dark-mode .request-item button {
+    background-color: #3498db;
+    color: white;
+}
+
+.dark-mode .request-item button:hover {
+    background-color: #2980b9;
+}
+
+.dark-mode .no-requests-message {
+    color: #bbb;
+}
+

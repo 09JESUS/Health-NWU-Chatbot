@@ -1,0 +1,21 @@
+css
+label {
+  display: block;
+  margin-top: 1rem;
+}
+
+html
+<label for="firstName">First Name:</label>
+<input name="firstName" id="firstName" type="text" autocomplete="given-name" />
+
+<label for="lastName">Last Name:</label>
+<input name="lastName" id="lastName" type="text" autocomplete="family-name" />
+
+<label for="email">Email:</label>
+<input name="email" id="email" type="email" autocomplete="off" />
+
+html
+<input autocomplete="off" />
+<input autocomplete="on" />
+<input autocomplete="shipping street-address" />
+<input autocomplete="section-user1 billing postal-code" />

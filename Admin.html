@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        /* Button styles */
+        
+        #sortButton {
+            background-color: #4CAF50;
+            /* Green background */
+            color: white;
+            /* White text */
+            border: none;
+            /* No border */
+            border-radius: 8px;
+            /* Rounded corners */
+            padding: 20px 25px;
+            /* Padding for spacing */
+            font-size: 16px;
+            /* Font size */
+            cursor: pointer;
+            /* Pointer cursor on hover */
+            transition: background-color 0.3s;
+            /* Smooth transition */
+        }
+        
+        #sortButton:hover {
+            background-color: #45a049;
+            /* Darker green on hover */
+        }
+        /* Style for radio buttons */
+        
+        input[type="radio"] {
+            margin-left: 5px;
+            /* Space between the radio button and label */
+        }
+        /* Align labels nicely */
+        
+        label {
+            margin-right: 10px;
+            /* Space between labels and inputs */
+        }
+        /* Container for sort options */
+        
+        #sortOptions {
+            margin-bottom: 20px;
+            /* Space below sort options */
+        }
+        
+        .sort-buttons button {
+            margin-left: 10px;
+            padding: 24px 30px;
+            /* Increased padding for larger buttons */
+            background-color: black;
+            /* Set background color to black */
+            color: white;
+            /* Set text color to white */
+            border: none;
+            /* Remove default border */
+            cursor: pointer;
+            /* Change cursor on hover */
+            font-size: 16px;
+            /* Increase font size */
+            transition: background-color 0.3s;
+            /* Smooth transition for hover effect */
+        }
+        
+        .sort-buttons button:hover {
+            background-color: #00ddff;
+            /* Darker shade on hover */
+        }
+        
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+        /* Sidebar Styling */
+        
+        .sidebar {
+            width: 280px;
+            background-color: #317185;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .sidebar ul li {
+            margin-bottom: 25px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        
+        .sidebar ul li:hover {
+            background-color: #34495e;
+            cursor: pointer;
+        }
+        
+        .sidebar ul li span {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        /* Main content */
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background-color: #ecf0f1;
+            overflow-y: auto;
+        }
+        
+        .main-content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .form-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-container input,
+        .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .form-container button {
+            padding: 10px 15px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .form-container button:hover {
+            background-color: #2ecc71;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #34495e;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+
+        }
+        
+        .delete-btn,
+        .update-btn {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        
+        .update-btn {
+            background-color: #2980b9;
+        }
+        
+        .delete-btn:hover {
+            background-color: #e74c3c;
+        }
+        
+        .update-btn:hover {
+            background-color: #3498db;
+        }
+
+        .section{
+            display:none;
+        }
+
+        .form-container{
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .table-container {
+            min-height: 100px;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+        .delete-btn,
+        .update-btn {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        
+        .update-btn {
+            background-color: #2980b9;
+        }
+        
+        .delete-btn:hover {
+            background-color: #e74c3c;
+        }
+        
+        .update-btn:hover {
+            background-color: #3498db;
+        }
+        input, select {
+    padding: 10px;
+    font-size: 16px;
+    width: 70%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+        
+#ReportsSection {
+    max-width: 900px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+div.filter-section {
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Medical Dashboard</h2>
+            <ul>
+                <li onclick="showSection('patientsSection')"><span>Patients</span></li>
+                <li onclick="showSection('agentsSection')"><span>Agents</span></li>
+                <li onclick="showSection('appointmentsSection')"><span>Appointments</span></li>
+                <li onclick="showSection('emergencySection')"><span>Emergency</span></li>
+                <li onclick="showSection('ReportsSection')"><span>Report</span></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>Medical Dashboard</h1>
+
+            <!-- Patients Section -->
+            <div id="patientsSection" class="section">
+                <h2>Patients</h2>
+                <div class="form-container">
+                    <label for="FirstName">First Name</label>
+                    <input type="text" id="FirstName" placeholder="Enter first name">
+
+                    <label for="patientLastName">Last Name</label>
+                    <input type="text" id="patientLastName" placeholder="Enter last name">
+
+                    <label for="patientEmail">Email</label>
+                    <input type="email" id="patientEmail" placeholder="Enter email">
+
+                    <label for="patientPhone">Cellphone</label>
+                    <input type="tel" id="patientPhone" placeholder="Enter cellphone number">
+
+                    <label for="patientAddress">Address</label>
+                    <input type="text" id="patientAddress" placeholder="Enter address">
+
+                    <button onclick="addPatient()">Add Patient</button>
+
+
+                </div>
+
+                <h3>Patients List</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <label for="nameFilter">Search by Name:</label>
+                            <input type="text" id="nameFilter" class="filter-input" placeholder="Enter client name">
+                            <div class="sort-buttons">
+                                <button onclick="sortPatients('asc')">Sort A-Z</button>
+                                <button onclick="sortPatients('desc')">Sort Z-A</button>
+                            </div>
+
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Cellphone</th>
+                            <th>Address</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientsTableBody">
+                        <!-- Patient rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Appointments Section -->
+            <div id="appointmentsSection" class="section" >
+                <h3>Appointments List</h3>
+                <label for="sortDateInput">Sort by Date</label>
+                <input type="date" id="sortDateInput" onchange="sortAppointmentsDate()">
+                <label for="sortStatus">Sort by Status:</label>
+                <select id="sortStatus" onchange="sortAppointmentsStatus()">
+                    <option value="">-- Select Status --</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <button onclick="resetFilters()">Reset Filters</button>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                            <!-- Appointment rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <h2>Appointments</h2>
+                <div class="form-container">
+                    <label for="appointmentEmail">Email</label>
+                    <input type="email" id="appointmentEmail" placeholder="Enter email">
+
+                    <label for="appointmentDate">Appointment Date</label>
+                    <input type="date" id="appointmentDate">
+
+                    <label for="appointmentTime">Appointment Time</label>
+                    <input type="time" id="appointmentTime">
+
+                    <label for="appointmentDescription">Appointment Description</label>
+                    <textarea id="appointmentDescription" rows="3" placeholder="Enter appointment description"></textarea>
+
+                    <button onclick="addAppointment()">Add Appointment</button>
+                </div>
+
+            </div>
+             <!-- Agents Section -->
+             <div id="agentsSection" class="section">
+                <h3>Agents List</h3>
+                <label for="nameFilter">Search by Name:</label>
+                <input type="text" id="nameFilter2" class="filter-input" placeholder="Enter client name" oninput="filterAgentsByName()">
+                <div class="sort-buttons">
+                    <button onclick="sortAgents('asc')">Sort A-Z</button>
+                    <button onclick="sortAgents('desc')">Sort Z-A</button>
+                </div>
+                <button onclick="resetFiltersA()">Reset Filters</button>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Cellphone</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agentsTableBody">
+                            <!-- Agent rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Add Agents</h2>
+
+                <div class="form-container">
+                    <label for="agentFirstName">First Name</label>
+                    <input type="text" id="agentFirstName" placeholder="Enter first name">
+            
+                    <label for="agentLastName">Last Name</label>
+                    <input type="text" id="agentLastName" placeholder="Enter last name">
+            
+                    <label for="agentEmail">Email</label>
+                    <input type="email" id="agentEmail" placeholder="Enter email">
+            
+                    <label for="agentPhone">Cellphone</label>
+                    <input type="tel" id="agentPhone" placeholder="Enter cellphone number">
+
+                    <label for="patientAddress">Address</label>
+                    <input type="text" id="agentAddress" placeholder="Enter address">
+            
+                    <button onclick="addAgent()">Add Agent</button>
+                </div>
+            
+            </div>
+            <!-- Emergency Section -->
+            <div id="emergencySection" class="section">
+                <h2>Emergency Contacts</h2>
+               
+                <h3>Emergency Contacts List</h3>
+                <div class="form-container">
+                    <label for="sortEmergencyDateInput">Sort by Date:</label>
+                    <input type="date" id="sortEmergencyDateInput">
+
+                    <div >
+                        <label for="sortEmergencyOrderAsc">Sort Ascending</label>
+                        <input type="radio" name="sortEmergencyOrder" value="asc" id="sortEmergencyOrderAsc" checked>
+
+                        <label for="sortEmergencyOrderDesc">Sort Descending</label>
+                        <input type="radio" name="sortEmergencyOrder" value="desc" id="sortEmergencyOrderDesc">
+                    </div>
+
+                    <button onclick="sortEmergencyAppointments()">Sort</button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Emergency Reasons</th>
+                                <th>Live Location</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Phone</th>
+                                <th>Emergency Residence</th>
+                                <th>Emergency Date/Time</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="emergencyTableBody">
+                            <!-- Emergency contact rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+               
+            </div>
+            <div id="ReportsSection" class="section">
+                <h2>Reports</h2>
+    
+    
+                <!-- Filter and Sort for Patients -->
+                <div class="filter-section">
+                    <label for="patientSort">Sort Patients by Name:</label>
+                    <select id="patientSort">
+                <option value="az">A - Z</option>
+                <option value="za">Z - A</option>
+            </select>
+                    <button id="downloadPatients">Download Patients Report</button>
+                </div>
+    
+                <!-- Filter for Appointments by Status -->
+                <div class="filter-section">
+                    <label for="appointmentStatus">Filter Appointments by Status:</label>
+                    <select id="appointmentStatus">
+                <option value="">All</option>
+                <option value="Completed">Completed</option>
+                <option value="Scheduled">Scheduled</option>
+            </select>
+                    <button id="downloadAppointments">Download Appointments Report</button>
+                </div>
+    
+                <!-- Filter for Emergencies by Name -->
+                <div class="filter-section">
+                    <label for="emergencyFilter">Filter Emergencies by Name:</label>
+                    <input type="text" id="emergencyFilter" placeholder="Enter emergency name">
+                    <button id="downloadEmergencies">Download Emergencies Report</button>
+                </div>
+            </div>
+            
+        </div>
+
+        <script>
+            const patients = [];
+            const appointments = [];
+            const emergencyContacts = [];
+            const agents = [];
+
+            function showSection(sectionId) {
+                const sections = document.querySelectorAll('.section');
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                });
+
+                document.getElementById(sectionId).style.display = 'block';
+
+                const sidebarItems = document.querySelectorAll('.sidebar ul li');
+                sidebarItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                document.querySelector(`li[onclick="showSection('${sectionId}')"]`).classList.add('active');
+            }
+
+            function addPatient() {
+                const firstName = document.getElementById('FirstName').value;
+                const lastName = document.getElementById('patientLastName').value;
+                const email = document.getElementById('patientEmail').value;
+                const phone = document.getElementById('patientPhone').value;
+                const address = document.getElementById('patientAddress').value;
+
+                if (!firstName || !lastName || !email || !phone || !address) {
+                    alert("All fields are required.");
+                    return;
+                }
+
+                const patient = {
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    address,
+                };
+
+                patients.push(patient);
+                renderPatients();
+                clearPatientForm();
+            }
+
+            function renderPatients() {
+                const tableBody = document.getElementById('patientsTableBody');
+                tableBody.innerHTML = '';
+
+                patients.forEach((patient, index) => {
+                    const row = `
+                    <tr>
+                        <td>${patient.firstName}</td>
+                        <td>${patient.lastName}</td>
+                        <td>${patient.email}</td>
+                        <td>${patient.phone}</td>
+                        <td>${patient.address}</td>
+                        <td>
+                            <button class="update-btn" onclick="updatePatient(${index})">Update</button>
+                            <button class="delete-btn" onclick="deletePatient(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                    tableBody.innerHTML += row;
+                });
+            }
+
+            function clearPatientForm() {
+                document.getElementById('FirstName').value = '';
+                document.getElementById('patientLastName').value = '';
+                document.getElementById('patientEmail').value = '';
+                document.getElementById('patientPhone').value = '';
+                document.getElementById('patientAddress').value = '';
+            }
+
+            function deletePatient(index) {
+                patients.splice(index, 1);
+                renderPatients();
+            }
+
+            function updatePatient(index) {
+                const patient = patients[index];
+                document.getElementById('FirstName').value = patient.firstName;
+                document.getElementById('patientLastName').value = patient.lastName;
+                document.getElementById('patientEmail').value = patient.email;
+                document.getElementById('patientPhone').value = patient.phone;
+                document.getElementById('patientAddress').value = patient.address;
+                deletePatient(index);
+            }
+
+            function sortPatients(order) {
+                patients.sort((a, b) => {
+                    const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+                    const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+                    return order === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+                });
+                renderPatients();
+            }
+
+        </script>
+</body>
+
+</html>

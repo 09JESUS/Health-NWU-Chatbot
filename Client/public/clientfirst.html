@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(255 255 255);
+            color: #000;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .container-fluid {
+            display: flex;
+            width: 100%;
+            padding: 0px;
+            /* flex-wrap: nowrap; */
+            flex-direction: column;
+            /* height: 90vh; */
+        }
+
+        .chat {
+            margin-top: auto;
+            margin-bottom: auto;
+            /* right: 9.83%; */
+            /* right: 0; */
+            /* left: 0; */
+        }
+
+        .card {
+            height: 100vh;
+            /* border-radius: 10px !important; */
+            background-color: rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            margin-left: 20%;
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-clip: border-box;
+        }
+
+        .contacts_body {
+            padding: 0.75rem 0 !important;
+            overflow-y: auto;
+            white-space: nowrap;
+        }
+
+        .msg_card_body {
+            padding-bottom: 100px;
+            overflow-y: auto;
+            -ms-overflow-style: none; /* For Internet Explorer and Edge */
+        }
+
+        .msg_card_body::-webkit-scrollbar {
+            display: none; /* For Chrome, Safari, and Opera */
+        }
+
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            border-bottom: 0 !important;
+        }
+
+        .card-footer {
+            bottom: 0;
+            position: fixed;
+            width: 70%;
+            left: 23%;
+        }
+
+        .container {
+            align-content: center;
+        }
+
+        .search {
+            border-radius: 15px 0 0 15px !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border: 0 !important;
+            color: white !important;
+        }
+
+        .search:focus {
+            box-shadow: none !important;
+            outline: 0px !important;
+        }
+
+        .type_msg {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border: 0 !important;
+            color: #fff8f8 !important;
+            height: 60px !important;
+            overflow-y: auto;
+        }
+
+        .type_msg:focus {
+            box-shadow: none !important;
+            outline: 0px !important;
+        }
+
+        
+
+        .attach_btn {
+            border-radius: 15px 0 0 15px !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border: 0 !important;
+            color: white !important;
+            cursor: pointer;
+        }
+
+        .send_btn {
+            border-radius: 0 15px 15px 0 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border: 0 !important;
+            color: white !important;
+            cursor: pointer;
+            margin-left: -1px;
+            transition: transform 0.3s ease-in-out; /* Add smooth transition */
+            font-size: 130%;
+        }
+
+        .send_btn :hover{
+            transform: scale(1.3); 
+
+        }
+
+        .search_btn {
+            border-radius: 0 15px 15px 0 !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            border: 0 !important;
+            color: white !important;
+            cursor: pointer;
+        }
+
+        .contacts {
+            list-style: none;
+            padding: 0;
+        }
+
+        .contacts li {
+            width: 100% !important;
+            padding: 5px 10px;
+            margin-bottom: 15px !important;
+        }
+
+        .active {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .user_img {
+            height: 70px;
+            width: 70px;
+            border: 1.5px solid #f5f6fa;
+        }
+
+        .user_img_msg {
+            height: 40px;
+            width: 40px;
+            border: 1.5px solid #f5f6fa;
+        }
+
+        .img_cont {
+            position: relative;
+            height: 70px;
+            width: 70px;
+        }
+
+        .img_cont_msg {
+            height: 40px;
+            width: 40px;
+        }
+
+        .online_icon {
+            position: absolute;
+            height: 15px;
+            width: 15px;
+            background-color: #4cd137;
+            border-radius: 50%;
+            bottom: 0.2em;
+            right: 0.4em;
+            border: 1.5px solid white;
+        }
+
+        .offline {
+            background-color: #c23616 !important;
+        }
+
+        .user_info {
+            margin-top: auto;
+            margin-bottom: auto;
+            margin-left: 15px;
+        }
+
+        .user_info span {
+            font-size: 20px;
+            color: white;
+        }
+
+        .user_info p {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .video_cam {
+            margin-left: 50px;
+            margin-top: 5px;
+        }
+
+        .video_cam span {
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .msg_cotainer {
+            margin-top: auto;
+            margin-bottom: auto;
+            margin-left: 10px;
+            border-radius: 25px;
+            background-color: rgb(82, 172, 255);
+            padding: 10px;
+            position: relative;
+        }
+
+        .msg_cotainer_send {
+            margin-top: auto;
+            margin-bottom: auto;
+            margin-right: 10px;
+            border-radius: 25px;
+            background-color: #58cc71;
+            padding: 10px;
+            position: relative;
+        }
+
+        .msg_time {
+            position: absolute;
+            left: 0;
+            bottom: -15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 10px;
+        }
+
+        .msg_time_send {
+            position: absolute;
+            right: 0;
+            bottom: -15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 10px;
+        }
+
+        .d-flex {
+            display: -ms-flexbox!important;
+            display: flex!important;
+            margin-top: 1%;
+            margin-left: 1%;
+        }
+        
+        .msg_head {
+            position: relative;
+            height: 15%;
+        }
+
+        #action_menu_btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .action_menu {
+            z-index: 1;
+            position: absolute;
+            padding: 15px 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 15px;
+            top: 30px;
+            right: 15px;
+            display: none;
+        }
+
+        .action_menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .action_menu ul li {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 5px;
+        }
+
+        .action_menu ul li i {
+            padding-right: 10px;
+        }
+
+        .action_menu ul li:hover {
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 576px) {
+            .contacts_card {
+                margin-bottom: 15px !important;
+            }
+        }
+
+        #server-status {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: green;
+            background-color: #d0d0d0;
+        }
+
+        .back-arrow {
+            color: black;
+            font-size: 24px;
+            margin-left: 20px; /* Adjust spacing as needed */
+            cursor: pointer;
+        }
+
+        .input-group {
+            position: relative;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            -ms-flex-align: stretch;
+            align-items: stretch;
+            width: 100%;
+            background: transparent;
+            bottom: 0;
+            position: fixed;
+            width: 70%;
+            left: 23%;
+            padding-bottom: 12px;
+        }
+
+        #request-chat-button.Options{
+            font-size: 14.8px !important;
+            font-stretch: px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            overflow-x: hidden;
+            padding-top: 20px;
+            background: #bdbcbe;
+            padding: 10px;
+            width: 20.2%;
+            z-index: 100;
+        }
+    
+        .request-chat-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-header {
+            background-color: transparent; /* Light mode chat header background */
+            transform: translateY(500px);
+        }
+
+        .options-container {
+            display: flex;
+            gap: 6px; /* Adjust gap between options */
+            background: none; /* No background */
+            border: none; /* No border */
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            flex-direction: column; /* Change to column for vertical layout */
+            gap: 6px; /* Adjust gap between options */
+            margin-top: auto;
+            padding-right: 30px;
+        }
+
+        .Options {
+            padding: 10px 20px;
+            background-color: transparent;
+            color: #2f2d33;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition for background change */
+            padding-right: 110px;
+            font-size: 14.5px;
+        }
+        .Options:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .mode-options {
+            width: 120px;
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            position: absolute;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            z-index: 1000;
+        }
+
+        .Chats{
+            display: flex;
+            font-size: 30px;
+            font-weight: bold;
+            padding-left: 15px;
+            padding-top: 30px;
+        }
+
+        .mode-options.active {
+            display: flex; /* Display when active */
+            transform: translateX(100px)translateY(-48px);
+        }
+
+        .mode-options .mode-option {
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-options .mode-option:hover, 
+        .mode-options .mode-option.active {
+            background: #eee;
+            border-radius: 15px; /* Ensure border radius remains on hover */
+        }
+        
+        .fas.fa-chart-pie{
+            margin-right: 9px;
+        }
+
+        .fas.fa-book-open{
+            margin-right: 9px;
+        }
+
+        .fas.fa-question-circle{
+            margin-right: 9px;
+        }
+
+        .fas.fa-bell{
+            margin-right: 9px;
+        }
+
+
+        .loading-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        .loader {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #3498db; /* Choose a color for the loader */
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.537);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+
+        body.dark-mode {
+            background:  #1a222f !important; /* Darker sidebar background */
+            color: #e4e6eb; /* Light text color */
+        }
+
+        .dark-mode .card{
+            background-color: transparent;
+        }
+
+        .dark-mode .user_info p {
+            color: rgba(255, 255, 255, 0.8); /* Brighter text color for contrast */
+        }
+
+        .dark-mode .msg_cotainer {
+            background-color: #4267B2; /* Darker blue for messages */
+        }
+
+        .dark-mode .msg_cotainer_send {
+            background-color: #25D366; /* Darker green for sent messages */
+        }
+
+        .dark-mode .msg_card_body {
+            background-color: #2a374a;
+        }
+        
+        .dark-mode .msg_head{
+            background-color: #1a222f;
+        }
+
+        .dark-mode .action_menu {
+            background-color: rgba(0, 0, 0, 0.8); /* Darker action menu background */
+            color: white;
+        }
+
+        .dark-mode .sidebar {
+            background:  #1a222f; /* Darker sidebar background */
+            border-right: 1px solid #e9e9e9;
+        }
+
+        .dark-mode .chat-header {
+            color: #eee; /* Lighter chat header text */
+        }
+
+        .dark-mode .Options {
+            color: #cabdbd; /* Lighter option text */
+        }
+
+        .dark-mode .Options:hover {
+            background-color: rgba(255, 255, 255, 0.2);}
+
+        .dark-mode .mode-options {
+            background: #333; /* Darker mode options background */
+            border-color: #555; /* Darker border color */
+        }
+
+        .dark-mode .mode-options .mode-option {
+            color: #eee; /* Lighter mode option text */
+        }
+
+        .dark-mode .mode-options .mode-option:hover, 
+        .dark-mode .mode-options .mode-option.active {
+            background: #444; /* Darker hover/active background */
+        }
+
+        .dark-mode .back-arrow {
+            color: rgb(172, 172, 172);
+        }
+
+        .dark-mode #server-status
+        {
+            background-color:
+             #2f2d33;
+        }
+
+        .dark-mode .request-chat-button {
+            background-color: transparent; /* Darker green for dark mode */
+            color: #dcc7d4;
+        }
+
+        .dark-mode .request-chat-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .dark-mode .loader {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .blur {
+            filter: blur(5px);
+        }
+
+        #logoutMessage {
+            display: none; /* Hidden by default */
+            color: #f9e4e4; /* Customize the style as needed */
+            font-weight: bold;
+            margin-top: 60px;
+            margin-left: 33%;
+            padding: 0.5%;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="sidebar">
+            <a href="javascript:history.back()" class="back-arrow" title="Logout and Close">
+                <i class="fas fa-arrow-left"></i> 
+            </a>    
+            <div class="Chats" id="Chats">
+                </h1>Chats</h1>
+            </div>
+            <div class="chat-header">
+  
+                <div class="options-container">
+                    <div class="Options" id="request-chat-button">
+                        <span class="fas fa-bell"></span>
+                        <span>Request Chat</span>
+                    </div>
+            
+                    <div class="Options" id="mode-btn">
+                        <span class="fas fa-chart-pie"></span>
+                        <span>Mode</span>
+                        <div class="mode-options" id="mode-options">
+                            <div class="mode-option">Light</div> 
+                            <div class="mode-option">Dark</div> 
+                        </div>
+                    </div>
+    
+                    <div class="Options">
+                        <span class="fas fa-question-circle"></span>
+                        <span>Help</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header msg_head">
+                <div class="d-flex bd-highlight">
+                    <div class="img_cont">
+                        <img src="{{ url_for('static', filename='OIP__3_-removebg-preview.png') }}" alt="Agent profile picture" class="rounded-circle user_img">
+                        <span class="online_icon" id="user-status-icon"></span>
+                    </div>
+                    <div class="user_info">
+                        <span id="user-status-text">Checking...</span>
+                        <p>Agent</p>
+                    </div>
+                </div>
+            </div>
+            <div id="messageArea" class="card-body msg_card_body">
+                <!-- Messages will be appended here dynamically -->
+                <div id="logoutMessage">The agent has logged out. You cannot send messages.</div>
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="message-input" name="msg" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required />
+            <div class="input-group-append">
+                <span type="button" id="send-button" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
+            </div>
+        </div>
+        <div id="loading-container" class="loading-container">
+            <div class="loader"></div>
+        </div>
+    </div>
+    
+    <script src="https://kit.fontawesome.com/ab5215fb7e.js" crossorigin="anonymous"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, push, onChildAdded, onDisconnect, serverTimestamp, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    
+        document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCygPyA_1XTUhx4ru_dYIbaIw25CIbmaGg",
+    authDomain: "chatbot-ae54e.firebaseapp.com",
+    databaseURL: "https://chatbot-ae54e-default-rtdb.firebaseio.com",
+    projectId: "chatbot-ae54e",
+    storageBucket: "chatbot-ae54e.appspot.com",
+    messagingSenderId: "209821127392",
+    appId: "1:209821127392:web:0f87b0bbd1763ba8ac3685",
+    measurementId: "G-R2GXCZM9J9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // References to HTML elements
+  const messageArea = document.getElementById('messageArea');
+  const messageInput = document.getElementById('message-input');
+  const sendButton = document.getElementById('send-button');
+  const userStatusText = document.getElementById('user-status-text');
+  const userStatusIcon = document.getElementById('user-status-icon');
+  const serverStatusDiv = document.getElementById('server-status');
+  let agentLoggedOut = false;
+
+  // Prompt for username once and store it in localStorage
+  let userName = localStorage.getItem('userName') || prompt("Enter your username:");
+  if (!userName) {
+    userName = "Guest";
+  }
+
+
+  // Function to format date and time into a readable string
+  function formatMessageTime(messageTime) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const currentTime = new Date();
+    if (messageTime.toDateString() === currentTime.toDateString()) {
+      return 'Today';
+    } else if (messageTime.toDateString() === new Date(currentTime - 86400000).toDateString()) {
+      return 'Yesterday';
+    } else {
+      return messageTime.toLocaleDateString('en-US', options);
+    }
+  }
+
+  // Function to create a message element
+  function createMessageElement(messageData) {
+  if (messageData.message === "The agent has logged out.") {
+    return null; // Do not create an element for this message
+  }
+  const messageTime = new Date(messageData.timestamp);
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('d-flex', 'mb-4');
+  if (messageData.sender === userName) {
+    messageElement.classList.add('justify-content-end');
+    messageElement.innerHTML = `
+      <div class="msg_cotainer_send">
+        ${messageData.message}
+        <span class="msg_time_send">${formatMessageTime(messageTime)} ${messageTime.toLocaleTimeString()}</span>
+      </div>
+    `;
+  } else {
+    messageElement.classList.add('justify-content-start');
+    messageElement.innerHTML = `
+      <div class="img_cont_msg">
+        <img src="https://i.ibb.co/d5b84Xw/Untitled-design.png" class="rounded-circle user_img_msg">
+      </div>
+      <div class="msg_cotainer">
+        ${messageData.message}
+        <span class="msg_time">${formatMessageTime(messageTime)} ${messageTime.toLocaleTimeString()}</span>
+      </div>
+    `;
+  }
+  return messageElement;
+}
+
+  // Function to send a message to Firebase Realtime Database
+  function sendMessage(message) {
+  if (agentLoggedOut) {
+    alert('The agent has logged out. You cannot send messages.');
+    return; // Do not send the message if the agent has logged out
+  }
+  const chatRequestKey = localStorage.getItem('activeChatRequestKey');
+  if (chatRequestKey) {
+    const messagesRef = ref(database, `chatRequests/${chatRequestKey}/messages`);
+    push(messagesRef, {
+      sender: userName,
+      message: message,
+      timestamp: serverTimestamp()
+    }).then(() => {
+      console.log('Message sent successfully!');
+    }).catch((error) => {
+      console.error('Error sending message:', error);
+    });
+  } else {
+    console.error('No active chat request found.');
+  }
+}
+ // Function to display messages for a specific chat request
+ function displayMessages(chatRequestKey) {
+  const logoutMessageElement = document.getElementById('logoutMessage');
+  messageArea.innerHTML = ''; // Clear previous messages
+  const messagesRef = ref(database, `chatRequests/${chatRequestKey}/messages`);
+  onChildAdded(messagesRef, (snapshot) => {
+    const messageData = snapshot.val();
+    if (messageData.message === "The agent has logged out.") {
+      agentLoggedOut = true; // Set the flag to true if the agent has logged out
+      if (logoutMessageElement) { // Check if the element exists
+        logoutMessageElement.style.display = 'block'; // Show the logout message
+      } else {
+        console.error('Logout message element not found.');
+      }
+    }
+    const messageElement = createMessageElement(messageData);
+    if (messageElement !== null) { // Check if messageElement is not null
+      messageArea.appendChild(messageElement);
+      messageArea.scrollTop = messageArea.scrollHeight; // Scroll to the bottom
+    }
+    // Ensure the logout message is always at the bottom
+    if (logoutMessageElement) {
+      messageArea.appendChild(logoutMessageElement);
+    }
+  });
+}
+  // Handle send button click
+  sendButton.addEventListener('click', () => {
+    const message = messageInput.value.trim();
+    if (message) {
+      sendMessage(message);
+      messageInput.value = '';
+    }
+  });
+
+  // Event listener for "Request Chat" button
+  document.getElementById('request-chat-button').addEventListener('click', function () {
+    showLoading(); // Show loading container when button is clicked
+
+    agentLoggedOut = false;
+    
+    const logoutMessageElement = document.getElementById('logoutMessage');
+    if (logoutMessageElement) {
+        logoutMessageElement.style.display = 'none'; // Hide the logout message
+    }
+
+    // Create a new chat request in the database
+    const chatRequestRef = push(ref(database, 'chatRequests'), {
+      userName: userName,
+      timestamp: serverTimestamp(),
+      status: 'pending'
+    });
+
+    console.log('Chat request sent to agents:', chatRequestRef.key);
+
+    // Store the chat request key locally
+    localStorage.setItem('activeChatRequestKey', chatRequestRef.key);
+
+    // Listen for changes to the chat request status
+    onValue(chatRequestRef, (snapshot) => {
+      const requestData = snapshot.val();
+      if (requestData.status === 'accepted') {
+        hideLoading(); // Hide loading container when request is accepted
+        console.log('Chat request accepted by an agent:', chatRequestRef.key);
+
+        // Chat request accepted, start listening for messages
+        displayMessages(chatRequestRef.key);
+
+        hideLoading();
+        setTimeout(() => {
+          document.querySelector('.card').classList.remove('blur');
+          document.querySelector('.sidebar').classList.remove('blur');
+          document.querySelector('.input-group').classList.remove('blur');
+
+          // Re-enable pointer events
+          document.querySelector('.sidebar').style.pointerEvents = 'auto';
+          document.querySelector('.input-group').style.pointerEvents = 'auto';
+          document.querySelector('.card').style.pointerEvents = 'auto';
+        }, 1000); // 3000 milliseconds (3 seconds) delay 
+      }
+    });
+
+    // Add blur effect to specified elements
+    document.querySelector('.card').classList.add('blur');
+    document.querySelector('.sidebar').classList.add('blur');
+    document.querySelector('.input-group').classList.add('blur');
+
+    // Disable pointer events on specified elements
+    document.querySelector('.sidebar').style.pointerEvents = 'none';
+    document.querySelector('.input-group').style.pointerEvents = 'none';
+    document.querySelector('.card').style.pointerEvents = 'none';
+
+    // Ensure the loading container is not blurred
+    document.getElementById('loading-container').classList.remove('blur');
+  });
+
+  // Function to update user status
+  function updateUserStatus(status) {
+    userStatusText.textContent = status;
+    userStatusIcon.className = status === 'Online' ? 'online_icon' : 'online_icon offline';
+  }
+
+  // Simulate checking agent status (replace with actual logic)
+  setTimeout(() => {
+    updateUserStatus('Online'); // Assume agent is online after 2 seconds
+  }, 2000);
+
+  // Event listener for the mode button
+  document.getElementById('mode-btn').addEventListener('click', function () {
+    document.getElementById('mode-options').classList.toggle('active');
+  });
+
+  // Event listener for each mode option
+  document.querySelectorAll('.mode-option').forEach(option => {
+    option.addEventListener('click', function (event) {
+      event.stopPropagation();
+      document.querySelectorAll('.mode-option').forEach(opt => opt.classList.remove('active'));
+      this.classList.add('active');
+      let isDarkMode = this.textContent === 'Dark';
+
+      document.getElementById('mode-options').classList.remove('active');
+
+      toggleDarkMode(isDarkMode);
+    });
+  });
+
+  // Event listener for closing the mode options when clicking outside
+  document.addEventListener('click', function (event) {
+    var isClickInsideModeBtn = document.getElementById('mode-btn').contains(event.target);
+    var isClickInsideModeOptions = document.getElementById('mode-options').contains(event.target);
+
+    if (!isClickInsideModeBtn && !isClickInsideModeOptions) {
+      document.getElementById('mode-options').classList.remove('active');
+    }
+  });
+
+  // Function to toggle dark mode
+  function toggleDarkMode(isDarkMode) {
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+
+  // Function to show the loading container
+  function showLoading() {
+    document.getElementById('loading-container').style.display = 'block';
+  }
+
+  // Function to hide the loading container
+  function hideLoading() {
+    document.getElementById('loading-container').style.display = 'none';
+  }
+
+  // Function to handle logout
+  function logout() {
+    const logoutTimestamp = serverTimestamp();
+
+    const userLogRef = ref(database, `userLogs/${userName}`);
+    const loginRef = push(userLogRef, {
+      type: 'login',
+      loginTimestamp: new Date().toLocaleString(),
+      logoutTimestamp: logoutTimestamp
+    });
+
+    const disconnectRef = ref(database, `userLogs/${userName}/${loginRef.key}`);
+    update(disconnectRef, {
+      logoutTimestamp: logoutTimestamp
+    }).then(() => {
+      console.log('Logout timestamps updated successfully!');
+      window.close();
+    }).catch((error) => {
+      console.error('Error updating logout timestamps:', error);
+    });
+  }
+
+  const backArrow = document.querySelector('.back-arrow');
+  backArrow.addEventListener('click', logout);
+
+
+});
+</script>
+</body>
+</html>

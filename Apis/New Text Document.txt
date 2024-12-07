@@ -1,0 +1,59 @@
+ document.getElementById('mode-btn').addEventListener('click', function() {
+    this.classList.toggle('active');
+    document.getElementById('mode-options').classList.toggle('active');
+});
+
+document.querySelectorAll('.mode-option').forEach(option => {
+    option.addEventListener('click', function(event) {
+        event.stopPropagation();
+        document.querySelectorAll('.mode-option').forEach(opt => opt.classList.remove('active')); 
+        this.classList.add('active'); 
+        if (this.textContent === 'Light') {
+            document.body.classList.remove('dark-mode');
+            toggleDarkMode(false);
+        } else if (this.textContent === 'Dark') {
+            document.body.classList.add('dark-mode');
+            toggleDarkMode(true);
+        }
+        // Close the mode options menu immediately
+        document.getElementById('mode-options').classList.remove('active'); 
+        document.getElementById('mode-btn').classList.remove('active'); 
+    });
+});
+
+
+function toggleDarkMode(enable) {
+    const elements = [
+        'sidebar',
+        'close-btn',
+        'profile-btn',
+        'emergency-btn',
+        'profile-container',
+        'container'
+    ];
+    elements.forEach(id => {
+        document.getElementById(id).classList.toggle('dark-mode', enable);
+    });
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.classList.toggle('dark-mode', enable);
+    });
+    document.querySelectorAll('.option').forEach(option => {
+        option.classList.toggle('dark-mode', enable);
+    });
+    document.querySelector('.caution').classList.toggle('dark-mode', enable);
+    document.querySelector('.circle').classList.toggle('dark-mode', enable);
+    document.querySelector('.info-text').classList.toggle('dark-mode', enable);
+    document.querySelector('.chat-input input').classList.toggle('dark-mode', enable);
+    document.querySelector('.chat-input button').classList.toggle('dark-mode', enable);
+    document.querySelector('.mode-options').classList.toggle('dark-mode', enable);
+    document.querySelectorAll('.mode-option').forEach(option => {
+        option.classList.toggle('dark-mode', enable);
+    });
+    document.querySelector('.profile-heading').classList.toggle('dark-mode', enable);
+    document.querySelector('.profile-content h2').classList.toggle('dark-mode', enable);
+    document.querySelectorAll('.profile-content p').forEach(p => {
+        p.classList.toggle('dark-mode', enable);
+    });
+    document.getElementById('upload-button').classList.toggle('dark-mode', enable);
+    document.getElementById('change-details-btn').classList.toggle('dark-mode', enable);
+}

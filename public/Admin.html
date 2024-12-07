@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Dashboard</title>
+    <!-- Include jsPDF and jsPDF-AutoTable from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        /* Button styles */
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        
+        #ReportsSection {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        
+        h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 40px;
+            color: #444;
+        }
+        
+        div.filter-section {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        label {
+            font-weight: bold;
+            font-size: 16px;
+            margin-right: 10px;
+            color: #555;
+        }
+        
+        input,
+        select {
+            padding: 10px;
+            font-size: 16px;
+            width: 70%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:active {
+            background-color: #004085;
+        }
+        
+        .report-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            input,
+            select {
+                width: 100%;
+                margin-top: 10px;
+            }
+            .report-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        .section
+        {
+            display: none;
+        }
+
+        #sortButton {
+            background-color: #4CAF50;
+            /* Green background */
+            color: white;
+            /* White text */
+            border: none;
+            /* No border */
+            border-radius: 8px;
+            /* Rounded corners */
+            padding: 20px 25px;
+            /* Padding for spacing */
+            font-size: 16px;
+            /* Font size */
+            cursor: pointer;
+            /* Pointer cursor on hover */
+            transition: background-color 0.3s;
+            /* Smooth transition */
+        }
+        
+        #sortButton:hover {
+            background-color: #45a049;
+            /* Darker green on hover */
+        }
+        /* Style for radio buttons */
+        
+        input[type="radio"] {
+            margin-left: 5px;
+            /* Space between the radio button and label */
+        }
+        /* Align labels nicely */
+        
+        label {
+            margin-right: 10px;
+            /* Space between labels and inputs */
+        }
+        /* Container for sort options */
+        
+        #sortOptions {
+            margin-bottom: 20px;
+            /* Space below sort options */
+        }
+        
+        .sort-buttons button {
+            margin-left: 10px;
+            padding: 24px 30px;
+            /* Increased padding for larger buttons */
+            background-color: black;
+            /* Set background color to black */
+            color: white;
+            /* Set text color to white */
+            border: none;
+            /* Remove default border */
+            cursor: pointer;
+            /* Change cursor on hover */
+            font-size: 16px;
+            /* Increase font size */
+            transition: background-color 0.3s;
+            /* Smooth transition for hover effect */
+        }
+        
+        .sort-buttons button:hover {
+            background-color: #00ddff;
+            /* Darker shade on hover */
+        }
+        
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+        /* Sidebar Styling */
+        
+        .sidebar {
+            width: 280px;
+            background-color: #317185;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .sidebar ul li {
+            margin-bottom: 25px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        
+        .sidebar ul li:hover {
+            background-color: #34495e;
+            cursor: pointer;
+        }
+        
+        .sidebar ul li span {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        /* Main content */
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background-color: #ecf0f1;
+            overflow-y: auto;
+        }
+        
+        .main-content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .form-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .form-container input,
+        .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .form-container button {
+            padding: 10px 15px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .form-container button:hover {
+            background-color: #2ecc71;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+        
+        .delete-btn,
+        .update-btn {
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        
+        .update-btn {
+            background-color: #2980b9;
+        }
+        
+        .delete-btn:hover {
+            background-color: #e74c3c;
+        }
+        
+        .update-btn:hover {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Medical Dashboard</h2>
+            <ul>
+                <li onclick="showSection('patientsSection')"><span>Patients</span></li>
+                <li onclick="showSection('agentsSection')"><span>Agents</span></li>
+                <li onclick="showSection('appointmentsSection')"><span>Appointments</span></li>
+                <li onclick="showSection('emergencySection')"><span>Emergency</span></li>
+                <li onclick="showSection('ReportsSection')"><span>Report</span></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>Medical Dashboard</h1>
+
+            <!-- Patients Section -->
+            <div id="patientsSection" class="section">
+                <h2>Patients</h2>
+                <div class="form-container">
+                    <label for="FirstName">First Name</label>
+                    <input type="text" id="FirstName" placeholder="Enter first name">
+
+                    <label for="patientLastName">Last Name</label>
+                    <input type="text" id="patientLastName" placeholder="Enter last name">
+
+                    <label for="patientEmail">Email</label>
+                    <input type="email" id="patientEmail" placeholder="Enter email">
+
+                    <label for="patientPhone">Cellphone</label>
+                    <input type="tel" id="patientPhone" placeholder="Enter cellphone number">
+
+                    <label for="patientAddress">Address</label>
+                    <input type="text" id="patientAddress" placeholder="Enter address">
+
+                    <button onclick="addPatient()">Add Patient</button>
+
+
+                </div>
+
+                <h3>Patients List</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <label for="nameFilter">Search by Name:</label>
+                            <input type="text" id="nameFilter" class="filter-input" placeholder="Enter client name">
+                            <div class="sort-buttons">
+                                <button onclick="sortPatients('asc')">Sort A-Z</button>
+                                <button onclick="sortPatients('desc')">Sort Z-A</button>
+                            </div>
+
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Cellphone</th>
+                            <th>Address</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientsTableBody">
+                        <!-- Patient rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Appointments Section -->
+            <div id="appointmentsSection" class="section">
+                <h2>Appointments</h2>
+                <div class="form-container">
+                    <label for="appointmentEmail">Email</label>
+                    <input type="email" id="appointmentEmail" placeholder="Enter email">
+
+                    <label for="appointmentDate">Appointment Date</label>
+                    <input type="date" id="appointmentDate">
+
+                    <label for="appointmentTime">Appointment Time</label>
+                    <input type="time" id="appointmentTime">
+
+                    <label for="appointmentDescription">Appointment Description</label>
+                    <textarea id="appointmentDescription" rows="3" placeholder="Enter appointment description"></textarea>
+
+                    <button onclick="addAppointment()">Add Appointment</button>
+                </div>
+
+                <h3>Appointments List</h3>
+                <label for="sortDateInput">Sort by Date</label>
+                <input type="date" id="sortDateInput">
+                <label for="sortOrderAsc">Sort Ascending</label>
+                <input type="radio" name="sortOrder" value="asc" id="sortOrderAsc" checked>
+                <label for="sortOrderDesc">Sort Descending</label>
+                <input type="radio" name="sortOrder" value="desc" id="sortOrderDesc">
+                <button onclick="sortAppointments()">Sort</button>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTableBody">
+                        <!-- Appointment rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <!-- Emergency Section -->
+            <div id="emergencySection" class="section">
+                <h2>Emergency Contacts</h2>
+                <div class="form-container">
+                    <label for="emergencyReasons">Emergency Reasons</label>
+                    <input type="text" id="emergencyReasons" placeholder="Enter emergency reasons">
+
+                    <label for="emergencyFirstName">First Name</label>
+                    <input type="text" id="emergencyFirstName" placeholder="Enter first name">
+
+                    <label for="emergencyLastName">Last Name</label>
+                    <input type="text" id="emergencyLastName" placeholder="Enter last name">
+
+                    <label for="emergencyEmail">Email</label>
+                    <input type="email" id="emergencyEmail" placeholder="Enter email">
+
+                    <label for="emergencyResidence">Emergency Residence</label>
+                    <input type="text" id="emergencyResidence" placeholder="Enter emergency residence">
+
+                    <label for="emergencyDateTime">Emergency Date/Time</label>
+                    <input type="datetime-local" id="emergencyDateTime">
+
+                    <button onclick="addEmergencyContact()">Add Emergency Contact</button>
+                </div>
+
+                <h3>Emergency Contacts List</h3>
+                <div class="form-container" style="margin-bottom: 20px;">
+                    <label for="sortEmergencyDateInput">Sort by Date:</label>
+                    <input type="date" id="sortEmergencyDateInput">
+
+                    <div style="margin-top: 10px;">
+                        <label for="sortEmergencyOrderAsc">Sort Ascending</label>
+                        <input type="radio" name="sortEmergencyOrder" value="asc" id="sortEmergencyOrderAsc" checked>
+
+                        <label for="sortEmergencyOrderDesc">Sort Descending</label>
+                        <input type="radio" name="sortEmergencyOrder" value="desc" id="sortEmergencyOrderDesc">
+                    </div>
+
+                    <button onclick="sortEmergencyContacts()">Sort</button>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Emergency Reasons</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Emergency Residence</th>
+                                <th>Emergency Date/Time</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="emergencyTableBody">
+                            <!-- Emergency contact rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Agents Section -->
+            <div id="agentsSection" class="section" style="display: none;">
+                <h2>Agents</h2>
+                <div class="form-container">
+                    <label for="agentFirstName">First Name</label>
+                    <input type="text" id="agentFirstName" placeholder="Enter first name">
+
+                    <label for="agentLastName">Last Name</label>
+                    <input type="text" id="agentLastName" placeholder="Enter last name">
+
+                    <label for="agentEmail">Email</label>
+                    <input type="email" id="agentEmail" placeholder="Enter email">
+
+                    <label for="agentPhone">Cellphone</label>
+                    <input type="tel" id="agentPhone" placeholder="Enter cellphone number">
+
+                    <button onclick="addAgent()">Add Agent</button>
+                </div>
+
+                <h3>Agents List</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Cellphone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agentsTableBody">
+                        <!-- Agent rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="ReportsSection" class="section">
+            <h2>Reports</h2>
+        
+            <!-- Filter and Sort for Patients -->
+            <div class="filter-section">
+                <label for="patientSort">Sort Patients by Name:</label>
+                <select id="patientSort">
+                    <option value="az">A - Z</option>
+                    <option value="za">Z - A</option>
+                </select>
+                <button onclick="downloadPatientsReport()">Download Patients Report</button>
+            </div>
+        
+            <!-- Filter for Appointments by Status -->
+            <div class="filter-section">
+                <label for="appointmentStatus">Filter Appointments by Status:</label>
+                <select id="appointmentStatus">
+                    <option value="">All</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Scheduled">Scheduled</option>
+                </select>
+                <button onclick="downloadAppointmentsReport()">Download Appointments Report</button>
+            </div>
+        
+            <!-- Filter for Emergencies by Name -->
+            <div class="filter-section">
+                <label for="emergencyFilter">Filter Emergencies by Name:</label>
+                <input type="text" id="emergencyFilter" placeholder="Enter emergency name">
+                <button onclick="downloadEmergenciesReport()">Download Emergencies Report</button>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <script>
+        
+        const patients = [];
+        const appointments = [];
+        let emergencyContacts = [];
+        const agents = [];
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            document.getElementById(sectionId).style.display = 'block';
+
+            const sidebarItems = document.querySelectorAll('.sidebar ul li');
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            document.querySelector(`li[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+
+
+      function addPatient() {
+                const firstName = document.getElementById('FirstName').value;
+                const lastName = document.getElementById('patientLastName').value;
+                const email = document.getElementById('patientEmail').value;
+                const phone = document.getElementById('patientPhone').value;
+                const address = document.getElementById('patientAddress').value;
+                const password = 'user'; // Default password
+                const userType = 'User'; // Default user type
+
+                if (!firstName || !lastName || !email || !phone || !address) {
+                    alert("All fields are required.");
+                    return;
+                }
+
+                const patient = {
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    address,
+                    password, // Include password for registration
+                    userType   // Include userType for registration
+                };
+
+                // Send patient data to the server (DB)
+                fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(patient), // Send patient data to the server
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert(result.message); // Display success message from server
+                        
+                        // Update local state after successful registration
+                        patients.push(patient);   // Add the new patient to the local array
+                        renderPatients();         // Re-render the patients list
+                        clearPatientForm();       // Clear the form fields
+                    } else {
+                        alert('Patient registration failed: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error registering patient:', error);
+                    alert('Error registering patient: ' + (error.message || 'Unknown error'));
+                });
+            }
+
+
+        function filterPatientsByName() {
+            const filterValue = document.getElementById('nameFilter').value.toLowerCase();
+            const patientsTableBody = document.getElementById('patientsTableBody');
+            const rows = patientsTableBody.getElementsByTagName('tr');
+        
+            for (let i = 0; i < rows.length; i++) {
+                // Access the firstName cell directly
+                const firstNameCell = rows[i].getElementsByTagName('td')[0]; // First cell for firstName
+                if (firstNameCell) {
+                    const firstName = firstNameCell.textContent.toLowerCase();
+                    // Toggle display based on filter value
+                    if (firstName.includes(filterValue)) {
+                        rows[i].style.display = ''; // Show the row
+                    } else {
+                        rows[i].style.display = 'none'; // Hide the row
+                    }
+                }
+            }
+        }
+
+        function renderPatients() {
+            const tableBody = document.getElementById('patientsTableBody');
+            tableBody.innerHTML = '';
+
+            patients.forEach((patient, index) => {
+                const row = `
+                    <tr>
+                        <td>${patient.firstName}</td>
+                        <td>${patient.lastName}</td>
+                        <td>${patient.email}</td>
+                        <td>${patient.phone}</td>
+                        <td>${patient.address}</td>
+                        <td>
+                            <button class="update-btn" onclick="updatePatient(${index})">Update</button>
+                            <button class="delete-btn" onclick="deletePatient(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function clearPatientForm() {
+            document.getElementById('FirstName').value = '';
+            document.getElementById('patientLastName').value = '';
+            document.getElementById('patientEmail').value = '';
+            document.getElementById('patientPhone').value = '';
+            document.getElementById('patientAddress').value = '';
+        }
+
+        function deletePatient(index) {
+            const patientEmail = patients[index].email; // Assuming patients array has the patient's email
+            patients.splice(index, 1);
+            renderPatients();
+        
+            // Send a request to the server to delete the patient from the database
+            fetch('/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: patientEmail }) // Sending the email to identify the patient
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Alert('Patient deleted from database successfully');
+                } else {
+                    Alert('Error deleting patient from database:', data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+        }
+        
+
+        function updatePatient(index) {
+            const patient = patients[index];
+            document.getElementById('FirstName').value = patient.firstName;
+            document.getElementById('patientLastName').value = patient.lastName;
+            document.getElementById('patientEmail').value = patient.email;
+            document.getElementById('patientPhone').value = patient.phone;
+            document.getElementById('patientAddress').value = patient.address;
+            deletePatient(index);
+        }
+
+        function sortPatients(order) {
+            patients.sort((a, b) => {
+                const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+                const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+                return order === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            });
+            renderPatients();
+        }
+
+        function addAppointment() {
+            const email = document.getElementById('appointmentEmail').value;
+            const date = document.getElementById('appointmentDate').value;
+            const time = document.getElementById('appointmentTime').value;
+            const description = document.getElementById('appointmentDescription').value;
+        
+            if (!email || !date || !time || !description) {
+                alert("All fields are required.");
+                return;
+            }
+        
+            const appointment = {
+                email,
+                date,
+                time,
+                description,
+                status: 'Pending',
+            };
+        
+            // Send appointment data to the server (DB)
+            fetch('/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(appointment) // Send appointment data to the server
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert(result.message); // Display success message from server
+                    
+                    // Update local state after successful registration
+                    appointments.push(appointment);   // Add the new appointment to the local array
+                    renderAppointments();             // Re-render the appointments list
+                    clearAppointmentForm();           // Clear the form fields
+                } else {
+                    alert('Appointment registration failed: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error registering appointment:', error);
+                alert('Error registering appointment: ' + (error.message || 'Unknown error'));
+            });
+        }
+        
+        
+        
+        function renderAppointments() {
+            const tableBody = document.getElementById('appointmentsTableBody');
+            tableBody.innerHTML = '';
+
+            appointments.forEach((appointment, index) => {
+                const row = `
+            <tr>
+                <td>${appointment.email}</td>
+                <td>${appointment.date}</td>
+                <td>${appointment.time}</td>
+                <td>${appointment.description}</td>
+                <td>
+                    <select class="appointment-status" onchange="handleStatusChange(this)">
+                        <option value="Pending" ${appointment.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="Rejected" ${appointment.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                        <option value="Scheduled" ${appointment.status === 'Scheduled' ? 'selected' : ''}>Scheduled</option>
+                        <option value="Completed" ${appointment.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                </td>                
+                <td>
+                    <button class="update-btn" onclick="updateAppointment(${index})">Update</button>
+                    <button class="delete-btn" onclick="deleteAppointment(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function handleStatusChange(selectElement) {
+            const newStatus = selectElement.value; // Get the selected value
+            const row = selectElement.closest('tr'); // Get the closest row (tr)
+            const email = row.cells[0].textContent; // Assuming email is in the first cell
+        
+            // Ask for confirmation before updating the status
+            const confirmUpdate = confirm(`Are you sure you want to update the status for ${email} to ${newStatus}?`);
+            
+            if (confirmUpdate) {
+                // Send the updated status to the server
+                fetch('/updateStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email, status: newStatus }) // Send email and updated status
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Status updated successfully!');
+                    } else {
+                        alert('Error updating status: ' + data.message);
+                        // Optionally reset the dropdown to the previous value
+                        selectElement.value = row.querySelector('.appointment-status').dataset.previousStatus; // Restore previous status
+                    }
+                })
+                .catch(err => {
+                    console.error('Error updating status:', err);
+                    alert('Error updating status: ' + (err.message || 'Unknown error'));
+                });
+            } else {
+                // Reset the dropdown to the previous value if the user cancels
+                selectElement.value = row.querySelector('.appointment-status').dataset.previousStatus;
+            }
+        }
+        
+
+        function clearAppointmentForm() {
+            document.getElementById('appointmentEmail').value = '';
+            document.getElementById('appointmentDate').value = '';
+            document.getElementById('appointmentTime').value = '';
+            document.getElementById('appointmentDescription').value = '';
+        }
+
+        function deleteAppointment(index) {
+    const appointmentEmail = appointments[index].email; // Get the email of the appointment to be deleted
+    appointments.splice(index, 1); // Remove from the local array
+    renderAppointments(); // Update the displayed list of appointments
+
+    // Send a request to the server to delete the appointment from the database
+    fetch('/deleteAppointment', { // Change to your specific endpoint for deleting appointments
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: appointmentEmail }) // Sending the email to identify the record
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Appointment deleted from database successfully');
+        } else {
+            alert('Error deleting appointment from database: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+    });
+}
+
+
+        function updateAppointment(index) {
+            const appointment = appointments[index];
+            document.getElementById('appointmentEmail').value = appointment.email;
+            document.getElementById('appointmentDate').value = appointment.date;
+            document.getElementById('appointmentTime').value = appointment.time;
+            document.getElementById('appointmentDescription').value = appointment.description;
+            updateAppointment(index);
+        }
+
+        function sortAppointments() {
+            const order = document.querySelector('input[name="sortOrder"]:checked').value;
+            const dateFilter = document.getElementById('sortDateInput').value;
+
+            appointments.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+
+                // Validate date parsing
+                if (isNaN(dateA) || isNaN(dateB)) {
+                    console.error("Invalid date format");
+                    return 0; // Keep original order if date parsing fails
+                }
+
+                return order === 'asc' ? dateA - dateB : dateB - dateA; // Sort by date
+            });
+
+            renderAppointments();
+        }
+
+
+
+
+        // Function to add an emergency contact
+        function addEmergencyContact() {
+            const reasons = document.getElementById('emergencyReasons').value;
+            const firstName = document.getElementById('emergencyFirstName').value;
+            const lastName = document.getElementById('emergencyLastName').value;
+            const email = document.getElementById('emergencyEmail').value;
+            const residence = document.getElementById('emergencyResidence').value;
+            const dateTime = document.getElementById('emergencyDateTime').value;
+
+            if (reasons && firstName && lastName && email && residence && dateTime) {
+                const contact = {
+                    reasons,
+                    firstName,
+                    lastName,
+                    email,
+                    residence,
+                    dateTime
+                };
+                emergencyContacts.push(contact);
+                updateEmergencyContactsTable();
+                clearEmergencyContactForm();
+            } else {
+                alert("Please fill out all fields.");
+            }
+        }
+
+        // Function to update the emergency contacts table
+        function updateEmergencyContactsTable() {
+            const tableBody = document.getElementById('emergencyTableBody');
+            tableBody.innerHTML = '';
+            emergencyContacts.forEach((contact, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${contact.reasons}</td>
+                    <td>${contact.firstName}</td>
+                    <td>${contact.lastName}</td>
+                    <td>${contact.email}</td>
+                    <td>${contact.residence}</td>
+                    <td>${new Date(contact.dateTime).toLocaleString()}</td>
+                    <td>
+                        <button onclick="updateEmergencyContact(${index})">Update</button>
+                        <button onclick="deleteEmergencyContact(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to update an emergency contact
+        function updateEmergencyContact(index) {
+            const updatedReasons = prompt("Update Emergency Reasons:", emergencyContacts[index].reasons);
+            const updatedFirstName = prompt("Update First Name:", emergencyContacts[index].firstName);
+            const updatedLastName = prompt("Update Last Name:", emergencyContacts[index].lastName);
+            const updatedEmail = prompt("Update Email:", emergencyContacts[index].email);
+            const updatedResidence = prompt("Update Emergency Residence:", emergencyContacts[index].residence);
+            const updatedDateTime = prompt("Update Emergency Date/Time:", emergencyContacts[index].dateTime);
+
+            if (updatedReasons && updatedFirstName && updatedLastName && updatedEmail && updatedResidence && updatedDateTime) {
+                emergencyContacts[index] = {
+                    reasons: updatedReasons,
+                    firstName: updatedFirstName,
+                    lastName: updatedLastName,
+                    email: updatedEmail,
+                    residence: updatedResidence,
+                    dateTime: updatedDateTime
+                };
+                updateEmergencyContactsTable();
+            }
+        }
+
+        // Function to delete an emergency contact
+        function deleteEmergencyContact(index) {
+            if (confirm("Are you sure you want to delete this contact?")) {
+                emergencyContacts.splice(index, 1);
+                updateEmergencyContactsTable();
+            }
+        }
+
+        // Function to sort emergency contacts
+        function sortEmergencyContacts() {
+            const dateInput = document.getElementById('sortEmergencyDateInput').value;
+            const order = document.querySelector('input[name="sortEmergencyOrder"]:checked').value;
+
+            let filteredContacts = emergencyContacts;
+            if (dateInput) {
+                filteredContacts = emergencyContacts.filter(contact =>
+                    new Date(contact.dateTime).toISOString().slice(0, 10) === dateInput);
+            }
+
+            filteredContacts.sort((a, b) => {
+                const dateA = new Date(a.dateTime);
+                const dateB = new Date(b.dateTime);
+                return order === "asc" ? dateA - dateB : dateB - dateA;
+            });
+
+            const tableBody = document.getElementById('emergencyTableBody');
+            tableBody.innerHTML = '';
+            filteredContacts.forEach((contact, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${contact.reasons}</td>
+                    <td>${contact.firstName}</td>
+                    <td>${contact.lastName}</td>
+                    <td>${contact.email}</td>
+                    <td>${contact.residence}</td>
+                    <td>${new Date(contact.dateTime).toLocaleString()}</td>
+                    <td>
+                        <button onclick="updateEmergencyContact(${index})">Update</button>
+                        <button onclick="deleteEmergencyContact(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to clear the emergency contact form
+        function clearEmergencyContactForm() {
+            document.getElementById('emergencyReasons').value = '';
+            document.getElementById('emergencyFirstName').value = '';
+            document.getElementById('emergencyLastName').value = '';
+            document.getElementById('emergencyEmail').value = '';
+            document.getElementById('emergencyResidence').value = '';
+            document.getElementById('emergencyDateTime').value = '';
+        }
+
+        function addAgent() {
+            const firstName = document.getElementById('agentFirstName').value;
+            const lastName = document.getElementById('agentLastName').value;
+            const email = document.getElementById('agentEmail').value;
+            const phone = document.getElementById('agentPhone').value;
+            const password = 'agent'; // Default password for agent
+            const userType = 'Agent'; // User type for agents
+        
+            if (!firstName || !lastName || !email || !phone) {
+                alert("All fields are required.");
+                return;
+            }
+        
+            // Set address to 'N/A' for agents since they don't have an address field
+            const agent = {
+                firstName,
+                lastName,
+                email,
+                phone,
+                address: 'N/A',
+                password,  // Include default password for registration
+                userType   // Include userType for registration
+            };
+        
+            // Send agent data to the server (DB)
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(agent), // Send agent data to the server
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert(result.message); // Display success message from server
+                    
+                    // Update local state after successful registration
+                    agents.push(agent);   // Add the new agent to the local array
+                    renderAgents();       // Re-render the agents list
+                    clearAgentForm();     // Clear the form fields
+                } else {
+                    alert('Agent registration failed: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error registering agent:', error);
+                alert('Error registering agent: ' + (error.message || 'Unknown error'));
+            });
+        }
+        
+
+        function renderAgents() {
+            const tableBody = document.getElementById('agentsTableBody');
+            tableBody.innerHTML = '';
+
+            agents.forEach((agent, index) => {
+                const row = `
+                    <tr>
+                        <td>${agent.firstName}</td>
+                        <td>${agent.lastName}</td>
+                        <td>${agent.email}</td>
+                        <td>${agent.phone}</td>
+                        <td>
+                            <button class="update-btn" onclick="updateAgent(${index})">Update</button>
+                            <button class="delete-btn" onclick="deleteAgent(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+        function updateAgent(index) {
+            // Fetch the agent to be updated from the agents array using the index
+            const agent = agents[index];
+            
+            // Pre-fill the agent form fields with the selected agent's current details
+            document.getElementById('agentFirstName').value = agent.firstName;
+            document.getElementById('agentLastName').value = agent.lastName;
+            document.getElementById('agentEmail').value = agent.email;
+            document.getElementById('agentPhone').value = agent.phone;
+            
+            // Remove the agent from the local array so that the update is handled freshly
+            agents.splice(index, 1);
+            
+            // Optionally, update the UI to reflect the change (you may call `renderAgents()` if needed)
+            renderAgents();
+        }
+
+        function clearAgentForm() {
+            document.getElementById('agentFirstName').value = '';
+            document.getElementById('agentLastName').value = '';
+            document.getElementById('agentEmail').value = '';
+            document.getElementById('agentPhone').value = '';
+        }
+
+        function deleteAgent(index) {
+            const recordEmail = agents[index].email; // Assuming agents array has the agent's email
+            agents.splice(index, 1); // Remove from the local array
+            renderAgents(); // Update the displayed list
+        
+            // Send a request to the server to delete the record from the database
+            fetch('/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: recordEmail }) // Sending the email to identify the record
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Alert('Record deleted from database successfully');
+                } else {
+                    Alert('Error deleting record from database:', data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+        }
+        
+        
+
+// Function to download Patients Report
+function downloadPatientsReport() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let rows = [];
+    const title = "Patients Report";
+
+    // Fetch patients from the server
+    fetch('/users')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Error fetching patients:', data.message);
+                return; // Exit if fetching fails
+            }
+
+            const sortOrder = document.getElementById("patientSort").value; // Sorting dropdown
+            let sortedPatients = [...data.users]; // Use fetched data
+
+            // Sort patients by name A-Z or Z-A
+            if (sortOrder === "az") {
+                sortedPatients.sort((a, b) => a.firstName.localeCompare(b.firstName));
+            } else if (sortOrder === "za") {
+                sortedPatients.sort((a, b) => b.firstName.localeCompare(a.firstName));
+            }
+
+            // Prepare rows for the PDF
+            rows = sortedPatients.map(patient => [patient.firstName, patient.lastName, patient.email, patient.phone, patient.address]);
+
+            doc.autoTable({
+                head: [['First Name', 'Last Name', 'Email', 'Phone', 'Address']],
+                body: rows,
+                startY: 30
+            });
+
+            // Add title to PDF
+            doc.setFontSize(18);
+            doc.text(title, 14, 20);
+
+            // Save the PDF
+            doc.save(`${title}.pdf`);
+        })
+        .catch(error => console.error('Error fetching patients:', error));
+}
+
+// Function to download Appointments Report
+function downloadAppointmentsReport() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let rows = [];
+    const title = "Appointments Report";
+
+    // Fetch appointments from the server
+    fetch('/get-appointments')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Error fetching appointments:', data.message);
+                return; // Exit if fetching fails
+            }
+
+            const statusFilter = document.getElementById("appointmentStatus").value; // Get selected status filter
+            let filteredAppointments = [...data.appointments]; // Use fetched data
+
+            // Filter appointments by status
+            if (statusFilter) {
+                filteredAppointments = filteredAppointments.filter(appointment => appointment.status === statusFilter);
+            }
+
+            // Prepare rows for the PDF
+            rows = filteredAppointments.map(appointment => [
+                appointment.email, 
+                appointment.Appointment_date,  // Update this to match the database field name
+                appointment.Appointment_time,  // Update this to match the database field name
+                appointment.Appointment_Description,  // Update this to match the database field name
+                appointment.status
+            ]);
+
+            doc.autoTable({
+                head: [['Email', 'Date', 'Time', 'Description', 'Status']],
+                body: rows,
+                startY: 30
+            });
+
+            // Add title to PDF
+            doc.setFontSize(18);
+            doc.text(title, 14, 20);
+
+            // Save the PDF
+            doc.save(`${title}.pdf`);
+        })
+        .catch(error => console.error('Error fetching appointments:', error));
+}
+
+
+// Function to download Emergencies Report
+function downloadEmergenciesReport() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let rows = [];
+    const title = "Emergencies Report";
+
+    // Fetch emergencies from the server
+    fetch('/get-emergencies')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Error fetching emergencies:', data.message);
+                return; // Exit if fetching fails
+            }
+
+            const filterValue = document.getElementById("emergencyFilter").value.toLowerCase(); // Get filter input
+            const filteredEmergencies = data.emergencies.filter(emergency =>
+                `${emergency.firstname} ${emergency.lastname}`.toLowerCase().includes(filterValue)
+            ); // Filter emergencies by first and last name
+
+            // Prepare rows for the PDF
+            rows = filteredEmergencies.map(emergency => [
+                `${emergency.firstname} ${emergency.lastname}`, // Full name
+                emergency.Emergency_Reason,                    // Emergency reason
+                emergency.Emergency_datetime,                  // Date and time of emergency
+                emergency.Emergency_Residence                  // Emergency residence
+            ]);
+
+            doc.autoTable({
+                head: [['Name', 'Emergency Reason', 'Date and Time', 'Residence']],
+                body: rows,
+                startY: 30
+            });
+
+            // Add title to PDF
+            doc.setFontSize(18);
+            doc.text(title, 14, 20);
+
+            // Save the PDF
+            doc.save(`${title}.pdf`);
+        })
+        .catch(error => console.error('Error fetching emergencies:', error));
+}
+
+    </script>
+</body>
+
+</html>

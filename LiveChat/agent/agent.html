@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Chat</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(42, 165, 165);
+        }
+        #chat-container {
+            width: 400px;
+            margin: 50px auto;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #chat-header {
+            padding: 10px;
+            background-color: #eee;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        #chat-messages {
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #eee;
+            text-align: right;
+        }
+        .agent-message {
+            background-color: #e0f2f7;
+            text-align: left;
+        }
+        #chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #send-button {
+            padding: 10px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #user-list {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        #server-status {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<div id="chat-container">
+    <div id="chat-header">
+        <h3>Agent Chat</h3>
+        <div id="user-list"></div>
+    </div>
+    <div id="server-status">Server Status: Checking...</div>
+    <div id="chat-messages"></div>
+    <div id="chat-input">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+    </div>
+</div>
+
+<!-- Firebase scripts -->
+<script type="module">
+    // Import necessary Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        databaseURL: "https://chatbot-ae54e-default-rtdb.firebaseio.com",
+        projectId: "chatbot-ae54e",
+        storageBucket: "chatbot-ae54e.appspot.com",
+        messagingSenderId: "209821127392",
+        appId: "1:209821127392:web:0f87b0bbd1763ba8ac3685",
+        measurementId: "G-R2GXCZM9J9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    const chatMessages = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const userList = document.getElementById('user-list');
+    const serverStatusDiv = document.getElementById('server-status');
+
+    let userName = prompt("Enter your username:");
+    serverStatusDiv.textContent = "Server Status: Connected";
+
+    // Real-time listener for messages
+    const chatMessagesRef = ref(database, 'chatMessages');
+    onChildAdded(chatMessagesRef, (snapshot) => {
+        const messageData = snapshot.val();
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', messageData.senderType === 'user' ? 'user-message' : 'agent-message');
+        messageElement.textContent = `${messageData.sender}: ${messageData.message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+    // Send message
+    sendButton.addEventListener('click', () => {
+        const message = messageInput.value;
+        if (message.trim() !== '') {
+            push(chatMessagesRef, {
+                message: message,
+                sender: userName,
+                senderType: 'agent',
+                timestamp: serverTimestamp()
+            }).then(() => {
+                messageInput.value = '';
+            }).catch(error => {
+                console.error('Error sending message:', error);
+            });
+        }
+    });
+
+    // Example code to fetch user list
+    const usersRef = ref(database, 'users');
+    onChildAdded(usersRef, (snapshot) => {
+        const user = snapshot.val();
+        const userItem = document.createElement('p');
+        userItem.textContent = user.userName;
+        userList.appendChild(userItem);
+    });
+
+</script>
+</body>
+</html>

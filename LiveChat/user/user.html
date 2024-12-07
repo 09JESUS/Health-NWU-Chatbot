@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Chat</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #chat-container {
+            width: 400px;
+            margin: 50px auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #chat-header {
+            padding: 10px;
+            background-color: #eee;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        #chat-messages {
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #eee;
+            text-align: right;
+        }
+        .agent-message {
+            background-color: #e0f2f7;
+            text-align: left;
+        }
+        #chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+        #message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #send-button {
+            padding: 10px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #user-list {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+<div id="chat-container">
+    <div id="chat-header">
+        <h3>User App</h3>
+        <div id="user-list"></div>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+    </div>
+</div>
+
+<script type="module">
+
+      // Import necessary Firebase modules
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCygPyA_1XTUhx4ru_dYIbaIw25CIbmaGg",
+        authDomain: "chatbot-ae54e.firebaseapp.com",
+        databaseURL: "https://chatbot-ae54e-default-rtdb.firebaseio.com",
+        projectId: "chatbot-ae54e",
+        storageBucket: "chatbot-ae54e.appspot.com",
+        messagingSenderId: "209821127392",
+        appId: "1:209821127392:web:0f87b0bbd1763ba8ac3685",
+        measurementId: "G-R2GXCZM9J9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    const chatMessages = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const userList = document.getElementById('user-list');
+
+    let userName = prompt("Enter your username:");
+
+    // Function to display messages
+    function displayMessage(message, sender, senderType) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', (senderType === 'user' ? 'user-message' : 'agent-message'));
+        messageElement.textContent = `${sender}: ${message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Real-time listener for messages
+    const chatMessagesRef = ref(database, 'chatMessages');
+    onChildAdded(chatMessagesRef, (snapshot) => {
+        const messageData = snapshot.val();
+        displayMessage(messageData.message, messageData.sender, messageData.senderType);
+    });
+
+    // Send message functionality
+    sendButton.addEventListener('click', () => {
+        const message = messageInput.value;
+        if (message.trim() !== '') {
+            push(chatMessagesRef, {
+                message: message,
+                sender: userName,
+                senderType: 'user',
+                timestamp: serverTimestamp()
+            }).then(() => {
+                messageInput.value = '';
+            }).catch(error => {
+                console.error('Error sending message:', error);
+            });
+        }
+    });
+    // Update user list (if needed)
+    // Firebase Firestore does not natively support collection group queries in real-time like socket.io
+
+    // Example code to fetch user list
+    /*
+    db.collection('users').get().then(snapshot => {
+        snapshot.forEach(doc => {
+            const user = doc.data();
+            const userItem = document.createElement('p');
+            userItem.textContent = user.userName;
+            userList.appendChild(userItem);
+        });
+    }).catch(error => {
+        console.error('Error fetching users:', error);
+    });
+    */
+
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    height: 80vh; /* Reduce the height */
+    max-width: 1200px; /* Set a max width */
+    margin: 50px auto; /* Center the container with some margin */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add some shadow for better visibility */
+    border-radius: 10px; /* Round the corners */
+    overflow: hidden; /* Ensure the rounded corners are visible */
+}
+
+.split {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* Add some padding */
+}
+
+.left {
+    background: #fff;
+    color: #333;
+    padding-left: 0px;
+}
+
+.right {
+    background: #52c6ff;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 0px;
+    padding-bottom: 60px;
+}
+
+.login-form {
+    width: 80%; /* Reduce the width */
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.8); /* Add a subtle background */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add some shadow */
+    margin-right: 10px;
+    padding-right: 0px;
+    padding-left: 30px;
+    margin-left: 30px;
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+}
+
+input[type="email"], input[type="password"], .chat-input input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding-right: 0px;
+    margin-bottom: 6px;
+    width: 450px;
+    padding-right: 0px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+    margin-top: 6px;
+    width: 440px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #5bc0de; /* Add border */
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 220px;
+    margin-top: 8px;
+    padding-right: 10px;
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+/* Login button */
+.split.left .login-form button {
+    background: #5bc0de;
+    color: #fff;
+    margin-top: 10px;
+    margin-bottom: auto;
+    width: 400px;
+    margin-right: 100px;
+    margin-left: 30px;
+}
+
+/* Hover effect for login button */
+.split.left .login-form button:hover {
+    background: #fff; /* Change the background color to white on hover */
+    color: #5bc0de; /* Change the text color to blue */
+}
+
+/* Sign up and register buttons */
+.split.right .register-section button,
+.right button {
+    background: #fff; /* White background by default */
+    color: #5bc0de; /* Blue text by default */
+    border: 2px solid #5bc0de; /* Add border */
+}
+
+/* Hover effect for sign up and register buttons */
+.split.right .register-section button:hover,
+.right button:hover {
+    background: #5bc0de; /* Blue background on hover */
+    color: #fff; /* White text on hover */
+}
+
+/* Right section button specific styling */
+.split.right .register-section button {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    width: 220px;
+}
+
+/* Social buttons hover effect */
+.social-btn1:hover, .social-btn2:hover {
+    background-color: #4aa3bf; /* Change the background color on hover */
+    color: #fff; /* Change text color to white */
+}
+
+/* Adjust hover effects for consistency */
+.right button:hover {
+    background: #4aa3bf; /* Change the background color on hover */
+    color: #fff; /* Ensure the text color remains white */
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    width: 445px;
+}
+
+.social-login {
+    text-align: initial;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    padding-left: 50px;
+}
+
+.social-icons {
+    width: 400px;
+    display: flex; /* This will align the items horizontally */
+    justify-content: flex-start;  /* This will center the items */
+    gap: 0px; /* This will add some space between the items */ 
+    padding-left: 0px;
+}
+
+.social-btn1{
+    width: 100px;
+    margin: 10px; /* Adjust as needed */
+    padding-left: 0px;
+    padding-right: 0px;
+    background-color: transparent; 
+    box-shadow: 0 0 0 0.2em hsl(223deg 90% 50%/0%);
+    color: #000000;
+    border: #5bc0de;
+    border: 1px solid #5bc0de; /* Add a border */
+    border-width: 1px;
+}
+
+.social-btn2{
+    width: 100px;
+    margin: 0px; /* Adjust as needed */
+    padding-right: 0px;
+    padding-left: 0px;
+    background-color: transparent; 
+    box-shadow: 0 0 0 0.2em hsl(223deg 90% 50%/0%);
+    color: #000000;
+    border: #5bc0de;
+    border: 1px solid #5bc0de; /* Add a border */
+    border-width: 1px;
+}
+
+.split.left .login-form .social-btn1 {
+    width: 100px;
+    margin: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 70px;
+    margin-right: 10px;
+}
+
+.split.left .login-form .social-btn2 {
+    width: 100px;
+    margin: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.oraccount{
+    width : 100%;
+    padding-left: 160px;
+    content: "";
+    display: block;
+    margin-inline-end: 0.75em;
+}
+
+.chat-container {
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    height: 100vh;
+}
+
+.chat-header {
+    background: #5bc0de;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.chat-box {
+    flex-grow: 1;
+    padding: 20px;
+    background: #fff;
+    overflow-y: auto;
+}
+
+.message {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    background: #f1f1f1;
+}
+
+.bot-message {
+    background: #e0e0e0;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: #333;
+}
+
+.chat-input input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.chat-input button {
+    margin-left: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

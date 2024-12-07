@@ -1,0 +1,1794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot GUI</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #location {
+            width: 100%;
+            background: transparent;
+            color: black;
+            padding-left: 10px;
+            margin-top: auto;
+            font-size: 13px;
+            font-family: auto;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-top: 2px solid black;
+            padding-bottom: 10px;
+            padding-right: 0px;
+            padding-top: 15px;
+        }
+        
+        .dark-mode #location {
+            background: transparent;
+            color: #7ebbbb;
+            /* Dark mode location text color */
+            border-top: 2px solid #937b7b;
+        }
+        
+        .logoutpage {
+            position: absolute;
+            /* Position relative to the nearest positioned ancestor */
+            bottom: 20px;
+            /* Distance from the bottom of the container */
+            right: 20px;
+            /* Distance from the right edge of the container */
+            background-color: #007BFF;
+            /* Background color (adjust as needed) */
+            color: white;
+            /* Text color */
+            border-radius: 50%;
+            /* Circular button */
+            width: 50px;
+            /* Width of the button */
+            height: 50px;
+            /* Height of the button */
+            display: flex;
+            /* Center icon inside the button */
+            justify-content: center;
+            /* Center horizontally */
+            align-items: center;
+            /* Center vertically */
+            cursor: pointer;
+            /* Pointer cursor on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Shadow for depth */
+            font-size: 24px;
+            /* Size of the icon */
+            z-index: 1000;
+            /* Ensure it stays on top of other elements */
+        }
+        
+        .logoutpage:hover {
+            background-color: #0056b3;
+            /* Darker background color on hover */
+            transform: scale(1.1);
+            /* Slightly enlarge on hover */
+            transition: background-color 0.3s, transform 0.3s;
+            /* Smooth transition for hover effects */
+        }
+        
+        .emergency-container {
+            display: none;
+            position: absolute;
+            top: 18%;
+            right: 6%;
+            width: 12%;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+        
+        .emergency-heading {
+            padding: 10px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            /* justify-content: center; */
+            background-color: #007bff;
+            /* Background color */
+            color: white;
+            /* Text color */
+            /* Adjust padding as needed */
+            border-top-left-radius: 15px;
+            /* Rounded corners */
+            border-top-right-radius: 15px;
+            /* Box shadow for a subtle effect */
+            font-size: 20px;
+            /* Font size */
+            font-weight: bold;
+            /* Bold text */
+            white-space: nowrap;
+            /* Prevent text wrapping */
+            /* Background spans full width */
+            transform: translate(-10px, -10px);
+        }
+        /* Dropdown list styling */
+        
+        #emergency-reason,
+        #Residence-select {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        /* Proceed button styling */
+        
+        .proceed-btn {
+            display: block;
+            text-align: center;
+            background-color: #28a745;
+            color: white;
+            padding: 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .proceed-btn:hover {
+            background-color: #218838;
+        }
+        
+        .chat-bubble {
+            margin: 5px;
+            padding: 10px;
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .user-message {
+            background-color: transparent;
+            align-self: flex-end;
+        }
+        
+        .robot-message {
+            background-color: transparent;
+            align-self: flex-start;
+        }
+        
+        .chat-icon {
+            font-size: 18px;
+            margin-right: 10px;
+            color: #555;
+            /* Adjust as needed */
+        }
+        
+        .chat-messages {
+            top: 12%;
+            /* Position it at the bottom */
+            left: 30%;
+            /* Position it at the right */
+            width: 60%;
+            /* Set a fixed width */
+            height: 67%;
+            /* Set a fixed height */
+            z-index: 999;
+            background-color: transparent;
+            /* Optional: semi-transparent background */
+            overflow-y: auto;
+            /* Enable scrolling if needed */
+            border-radius: 10px;
+            /* Optional: rounded corners */
+            padding: 10px;
+            /* Optional: padding inside the container */
+            transition: all 0.3s ease;
+            position: fixed;
+        }
+        
+        .chat-messages.shifted {
+            padding-left: 150px;
+            padding-right: 125px;
+            transform: translateX(-28%);
+            width: 55%;
+        }
+        
+        .heading-text {
+            font-size: 20px;
+            text-decoration: underline;
+            display: block;
+            /* Ensure it occupies its own line */
+            margin-bottom: 6px;
+            /* Add spacing between heading and response */
+        }
+        
+        .separator-line {
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+            width: 100%;
+        }
+        /* Typing animation styling */
+        
+        .typing-animation {
+            display: flex;
+            align-items: center;
+            background-color: transparent;
+            padding: 10px;
+            border-radius: 15px;
+        }
+        
+        .typing-animation .chat-icon {
+            margin-right: 8px;
+        }
+        
+        .typing-animation .typing-dots {
+            font-size: 20px;
+            color: #888;
+        }
+        
+        .typing-animation .typing-dots::after {
+            content: '.';
+            animation: typing 1.5s steps(5, end) infinite;
+        }
+        
+        .typing-animation .typing-dots::before {
+            content: '..';
+            animation: typing 1.5s steps(5, end) infinite;
+        }
+        
+        .typing-animation .typing-dots {
+            content: '...';
+            animation: typing 1.5s steps(5, end) infinite;
+        }
+        /* Keyframes for typing animation */
+        
+        @keyframes typing {
+            0% {
+                color: transparent;
+            }
+            100% {
+                color: #888;
+            }
+        }
+
+        .loading-animation {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            padding-bottom: 10px; /* Adjust this value to create the desired gap */
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #000;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+    </style>
+</head>
+
+<body id="body">
+    <div class="container-main" id="container-main">
+        <div class="sidebar" id="sidebar">
+         
+            <div class="top-items">
+                <div class="sidebar-item" id="newchat-button">
+                    <i class="fas fa-book"></i>
+                    <span>New Chat</span>
+                </div>
+                <div class="sidebar-item" id="appointment-btn">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Appointments</span>
+                </div>
+
+            </div>
+            <div class="bottom-items">   
+                <div class="sidebar-item" id="agentChatButton" onclick="openMultiplePages()">
+                    <i class="fas fa-comments"></i>
+                    <span>Agent Chat</span>
+                </div>
+
+                <div class="sidebar-item" id="mode-btn">
+                    <i class="fas fa-pie-chart"></i>
+                    <span>Mode</span>
+                    <div class="mode-options" id="mode-options">
+                        <div class="mode-option">Light</div>
+                        <div class="mode-option">Dark</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-item">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </div>
+
+                <div id="map" class="hidden"></div>
+                <div class="sidebar-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About</span>
+                </div>
+
+                <div id="location">
+                    <span>Current location: Waiting for position...</span>
+                </div>
+            </div>
+        </div>
+        <div id="appointment-container" class="appointment-container">
+            <div class="appointment-heading" id="appointment-heading">
+                <span>Book an Appointment</span>
+                <div class="close-appointment" id="close-appointment">
+                    <i class="fas fa-close"></i>
+                </div>
+            </div>
+            <label for="appointment-date">Date:</label>
+            <input type="date" id="appointment-date" class="appointment-field">
+        
+            <label for="appointment-time">Time:</label>
+            <input type="time" id="appointment-time" class="appointment-field">
+        
+            <label for="appointment-reason">Reason:</label>
+            <textarea id="appointment-reason" class="appointment-field" placeholder="Reason for appointment"></textarea>
+            
+            <label for="appointment-status">Status:</label>
+            <textarea id="appointment-status" class="appointment-field" placeholder="..." readonly
+            disabled></textarea>
+        
+            <span id="book-appointment" class="book-appointment">Book</span>
+            <span id="update-appointment" class="update-appointment">Update</span>
+            <span id="delete-appointment" class="delete-appointment">Delete</span>
+        </div>
+        <div class="close-btn" id="close-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <div class="profile-btn" id="profile-btn">
+            <i class="fas fa-user"></i>
+        </div>
+
+        <div class="emergency-btn" id="emergency-btn">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+
+        <div class="emergency-container" id="emergency-container">
+            <div class="emergency-heading">
+                <span>Emergency</span>
+                <div class="close-emergency" id="close-emergency">
+                    <i class="fas fa-close"></i>
+                </div>
+            </div>
+            <div class="loading-animation" id="loading-animation">
+                <div class="spinner" id="spinner"></div>
+                <span>Contacting clinic...</span>
+            </div>
+            <select id="emergency-reason">
+                <option value="" disabled selected>Select a reason</option>
+                <option value="fire">Fire</option>
+                <option value="medical">Medical Emergency</option>
+                <option value="security">Security Issue</option>
+            </select>
+            <select id="Residence-select">
+                <option value="" disabled selected>Select Residency</option>
+                <option value="Faranani">Faranani</option>
+                <option value="LongFellow">LongFellow</option>
+                <option value="Ebukhosini">Ebukhosini</option>
+                <option value="Khumba">Khumba</option>
+                <option value="Thuthuka">Thuthuka</option>
+                <option value="Vergelegen">Vergelegen</option>
+                <option value="Jasmyn">Jasmyn</option>
+                <option value="Bohlale">Bohlale</option>
+                <option value="Moahi">Moahi</option>
+                <option value="Oracia">Oyx and Acacia</option>
+                <option value="Bohlale">Bohlale</option>
+            </select>
+            <span class="proceed-btn" id="proceed-btn">Proceed</span>
+        </div>
+        
+        <div id="profile-container" class="profile-container">
+            <div class="profile-content">
+              <div class="profile-heading">
+                <span>My Profile</span>
+                <!-- X button for closing profile -->
+                <div class="close-profile-btn" id="close-profile-btn">
+                  <i class="fas fa-close"></i>
+                </div>
+              </div>
+              <div class="profile-info">
+                <div class="profile-icon">
+                  <i class="fas fa-user" id="default-icon"></i>
+                  <img id="uploaded-image" alt="Profile Image">
+                  <input type="file" id="image-upload" accept="image/*">
+                </div>
+                <div class="profile-details">
+                    <p><strong>Name:</strong> <span id="profile-name" data-name="firstName"></span></p>
+                    <p><strong>Surname:</strong> <span id="profile-surname" data-name="lastName"></span></p>
+                    <p><strong>Email:</strong> <span id="profile-email" data-name="email"></span></p>
+                    <p><strong>Phone Number:</strong> <span id="profile-phone" data-name="phone"></span></p>
+                    <p><strong>Location:</strong> <span id="profile-location" data-name="address"></span></p>
+                </div>
+              </div>
+              <div class="btns" id="btns">
+                <!-- Change button text to "Change Details" -->
+                <button id="change-details-btn">Update Details</button>
+                <label for="image-upload" id="upload-button">Upload</label>
+                <button id="update-details-btn" class="hidden2">Update</button>
+              </div>     
+            </div>
+        </div>
+
+
+        <div class="container" id="container">
+            <div class="welcome-text">
+                Welcome <span id="user-name"></span>
+                <div id="help-text">How can we help you today?</div>
+            </div>
+            <div class="middle-text">
+                <div class="options" id="options">
+                     <div class="option">
+                        <p><strong>Symptoms Assessment</strong> involves evaluating signs or indications of illness or discomfort...</p>
+                    </div>
+                    <div class="option" id="option-1">
+                        <p><strong>Healthcare Learning</strong> refers to the process of acquiring knowledge, skills, and competencies related to healthcare practices...</p>
+                    </div>
+                    <div class="option" id="option-3">
+                        <p><strong>Emergency Details</strong> encompass important information related to handling urgent situations, such as contacting emergency services...</p>
+                    </div>
+                </div>
+                <div class="caution" id="caution">
+                    <p><strong>Caution:</strong> This chatbot provides informational support only. For medical advice, consult a qualified professional. Avoid making medical decisions solely based on this chatbot's responses.</p>
+                </div>
+                <div class="circle-container">
+                    <div class="circle">
+                        <img src="{{ url_for('static', filename='image/OIP.png') }}" alt="Clinic logo">
+                    </div>
+                    <div class="info-text" id="info-text">
+                        <h2>Student Counselling and Development</h2>
+                        <a href="https://services.nwu.ac.za/student-counselling-and-development/psychological-services">https://services.nwu.ac.za/student-counselling-and-development/psychological-services</a>
+                    </div>
+                </div>
+            </div>
+               
+            <div class="chat-input" id="chat-input">
+                <textarea placeholder="Type a message..." oninput="autoGrow(this)"></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+        <div class="chat-container" id="chat-container">
+            <div class="chat-input" id="chat-input">
+                <textarea placeholder="Type a message..." oninput="autoGrow(this)"></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <div class="logoutpage" id="logoutpage">
+            <i class="fas fa-door-open"></i>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/ab5215fb7e.js" crossorigin="anonymous"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqje4PQn3pMbjRtf_zjbcRtc9V8jHi6K0&callback=initMap&libraries=geometry" async defer></script>
+
+    <script>
+
+        let newPasswordField = null;
+        let confirmPasswordField = null;
+
+
+//Image upload code to gui
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0]; // Access the first file
+            if (file) {
+                // Display the image first
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const uploadedImage = document.getElementById('uploaded-image');
+                    const defaultIcon = document.getElementById('default-icon');
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.style.display = 'block'; // Ensure the image is displayed
+                    defaultIcon.style.display = 'none'; // Hide the default icon
+                };
+                reader.readAsDataURL(file); // Convert the file to a DataURL for display
+            }
+        });
+        
+        //Image upload code to database
+        // Handle the upload after the image is displayed
+        document.getElementById('image-upload').addEventListener('change', async function(event) {
+            const file = event.target.files[0]; // Access the first file
+            if (file) {
+                const formData = new FormData();
+                formData.append('image', file); // Correctly append the image file
+        
+                try {
+                    const response = await fetch('/upload-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    alert(result.message); // Show success or error message
+                } catch (error) {
+                    alert('Error uploading image: ' + error.message); // Handle fetch errors
+                }
+            }
+        });
+        
+        document.getElementById('change-details-btn').addEventListener('click', function() {
+            const profileDetails = document.querySelectorAll('.profile-details span');
+        
+            // Replace existing spans with input elements
+            profileDetails.forEach(span => {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = span.textContent;
+                input.name = span.dataset.name; // Ensure the input has a name attribute
+                span.parentNode.replaceChild(input, span);
+            });
+        
+            // Add checkbox for changing password
+            const profileDetailsDiv = document.querySelector('.profile-details');
+        
+            // Checkbox for toggling password fields
+            const showPasswordCheckbox = document.createElement('input');
+            showPasswordCheckbox.type = 'checkbox';
+            showPasswordCheckbox.id = 'toggle-password-fields';
+            const label = document.createElement('label');
+            label.textContent = 'Change Password';
+            label.appendChild(showPasswordCheckbox);
+        
+            // Append the checkbox to the profile details
+            profileDetailsDiv.appendChild(label);
+        
+            // Hide Change Details button and show Update button
+            document.getElementById('change-details-btn').style.display = 'none';
+            document.getElementById('update-details-btn').classList.remove('hidden2');
+        
+            // Add event listener for the checkbox to show/hide password fields
+            showPasswordCheckbox.addEventListener('change', function() {
+                // Create New Password field if it doesn't exist
+                if (this.checked) {
+                    const newPasswordField = document.createElement('p');
+                    newPasswordField.innerHTML = `
+                        <strong>New Password:</strong> 
+                        <span id="profile-new-password" data-name="newPassword">
+                            <input type="password" id="new-password" name="newPassword">
+                            <input type="checkbox" id="toggle-new-password"> Show Password
+                        </span>
+                    `;
+                    profileDetailsDiv.appendChild(newPasswordField);
+        
+                    // Create Confirm Password field
+                    const confirmPasswordField = document.createElement('p');
+                    confirmPasswordField.innerHTML = `
+                        <strong>Confirm Password:</strong> 
+                        <span id="profile-confirm-password" data-name="confirmPassword">
+                            <input type="password" id="confirm-password" name="confirmPassword">
+                            <input type="checkbox" id="toggle-confirm-password"> Show Password
+                        </span>
+                    `;
+                    profileDetailsDiv.appendChild(confirmPasswordField);
+        
+                    // Add event listeners for password visibility toggles
+                    document.getElementById('toggle-new-password').addEventListener('change', function() {
+                        const newPasswordField = document.getElementById('new-password');
+                        newPasswordField.type = this.checked ? 'text' : 'password';
+                    });
+        
+                    document.getElementById('toggle-confirm-password').addEventListener('change', function() {
+                        const confirmPasswordField = document.getElementById('confirm-password');
+                        confirmPasswordField.type = this.checked ? 'text' : 'password';
+                    });
+                } else {
+                    // Remove password fields if checkbox is unchecked
+                    const newPasswordField = document.getElementById('profile-new-password');
+                    const confirmPasswordField = document.getElementById('profile-confirm-password');
+                    if (newPasswordField) newPasswordField.remove();
+                    if (confirmPasswordField) confirmPasswordField.remove();
+                }
+            });
+        });
+        
+        document.getElementById('update-details-btn').addEventListener('click', function() {
+            const profileDetails = document.querySelectorAll('.profile-details input');
+            const data = {};
+            let allFieldsFilled = true;
+        
+            profileDetails.forEach(input => {
+                if (input.name !== 'newPassword' && input.name !== 'confirmPassword' && input.value.trim() === '') {
+                    allFieldsFilled = false;
+                    alert(`${input.name} cannot be empty.`);
+                    return;
+                }
+                data[input.name] = input.value;
+                const span = document.createElement('span');
+                span.textContent = input.value;
+                span.dataset.name = input.name; // Store the name attribute in a data attribute
+                input.parentNode.replaceChild(span, input);
+            });
+        
+            // Validate password fields only if they are present
+            const newPassword = document.getElementById('new-password');
+            const confirmPassword = document.getElementById('confirm-password');
+        
+            if (newPassword && confirmPassword) {
+                // Check if new password is not empty and matches confirm password
+                if (newPassword.value.trim() !== '' && newPassword.value === confirmPassword.value) {
+                    data.newPassword = newPassword.value; // Only include if the new password is valid
+                } else {
+                    alert('Passwords do not match or are empty.'); // Show alert if passwords do not match or are empty
+                    return; // Prevent form submission if passwords do not match or are empty
+                }
+            } else {
+                alert('New password field does not exist.'); // Show alert if new password field does not exist
+                return; // Prevent form submission if new password field does not exist
+            }
+        
+            // Check if any required field is missing
+            if (!allFieldsFilled) {
+                console.error('One or more fields are empty:', data);
+                return;
+            }
+        
+            // Log data to be sent
+            console.log('Data to be sent:', data);
+        
+            // Send AJAX request to update profile
+            fetch('/update-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('Profile updated successfully!');
+        
+                    // Remove all non-<p> elements from .profile-details
+                    const profileDetailsDiv = document.querySelector('.profile-details');
+                    const children = Array.from(profileDetailsDiv.children);
+                    children.forEach(child => {
+                        if (child.tagName !== 'P') {
+                            child.remove();
+                        }
+                    });
+        
+                    // Restore original form
+                    document.getElementById('update-details-btn').classList.add('hidden2');
+                    document.getElementById('change-details-btn').style.display = 'inline-block';
+                    document.getElementById('upload-button').style.display = 'inline-block';
+        
+                } else {
+                    alert('Error updating profile: ' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating profile.');
+            });
+        });
+        
+        
+        
+        
+         //chatbot chat
+         document.addEventListener('DOMContentLoaded', function() {
+            const sendButton = document.querySelector('#chat-input button');
+            const newChatButton = document.querySelector('#newchat-button');
+            const welcomeText = document.querySelector('.welcome-text');
+            const caution = document.querySelector('.caution');
+            const options = document.querySelector('.options');
+            const circleContainer = document.querySelector('.circle-container');
+            const container = document.querySelector('#container');
+            const option = document.getElementById('option-1');
+        
+            // Create chat-messages container when "Send" button is clicked
+            sendButton.addEventListener('click', function() {
+                welcomeText.classList.add('slide-up');
+                caution.classList.add('slide-up');
+                options.classList.add('slide-up');
+                circleContainer.classList.add('slide-up');
+        
+                // Delay the appearance of the chat messages until after the slide-up
+                setTimeout(function() {
+                    if (!document.querySelector('#chat-messages')) {
+                        const chatMessages = document.createElement('div');
+                        chatMessages.id = 'chat-messages';
+                        chatMessages.className = 'chat-messages';
+                        container.appendChild(chatMessages);
+                    }
+        
+                    if (document.body.classList.contains('dark-mode')) {
+                        container.classList.add('transparent-bg');
+                    }
+                }, 3000); // Adjust the delay as needed
+            });
+
+            const questions = [
+            "How can maintaining a healthy diet impact your academic performance?",
+            "What are the benefits of regular physical activity for students?",
+            "How does screen time affect your sleep and overall health?",
+            "What are some effective ways to manage stress during exams?",
+            "Why is it important to stay hydrated, especially during school hours?",
+            "How can you prevent the spread of common illnesses in a school environment?",
+            "What are the mental health benefits of having a hobby or extracurricular activity?",
+            "How does getting enough sleep affect your concentration and memory?",
+            "What are the dangers of vaping and smoking for teenagers?",
+            "How can you create a balanced study and leisure schedule to maintain good health?",
+            "How can practicing mindfulness and meditation improve your mental health?",
+            "What are the benefits of participating in team sports for social and physical health?",
+            "How does proper posture affect your overall health and well-being?",
+            "What are the effects of caffeine on a teenager’s body and mind?",
+            "How can you develop healthy sleep habits to improve your daily routine?"
+            ];
+
+            option.addEventListener('click', function() {
+                const randomIndex = Math.floor(Math.random() * questions.length);
+                const randomQuestion = questions[randomIndex];
+                document.querySelector('#chat-input textarea').value = randomQuestion;
+                welcomeText.classList.add('slide-up');
+                caution.classList.add('slide-up');
+                options.classList.add('slide-up');
+                circleContainer.classList.add('slide-up');
+                sendMessage();
+
+                // Delay the appearance of the chat messages until after the slide-up
+                setTimeout(function() {
+                    if (!document.querySelector('#chat-messages')) {
+                        const chatMessages = document.createElement('div');
+                        chatMessages.id = 'chat-messages';
+                        chatMessages.className = 'chat-messages';
+                        container.appendChild(chatMessages);
+                    }
+        
+                    if (document.body.classList.contains('dark-mode')) {
+                        container.classList.add('transparent-bg');
+                    }
+                }, 3000); // Adjust the delay as needed
+            });
+        
+            // Remove the 'slide-up' class to show elements when "New Chat" is clicked
+            newChatButton.addEventListener('click', function() {
+                welcomeText.classList.remove('slide-up');
+                caution.classList.remove('slide-up');
+                options.classList.remove('slide-up');
+                circleContainer.classList.remove('slide-up');
+        
+                welcomeText.classList.add('slide-down');
+                caution.classList.add('slide-down');
+                options.classList.add('slide-down');
+                circleContainer.classList.add('slide-down');
+        
+                // Clear chat messages when "New Chat" is clicked
+                const chatMessages = document.getElementById('chat-messages');
+                if (chatMessages) {
+                    chatMessages.remove(); // Remove chat-messages on new chat
+                }
+        
+                setTimeout(function() {
+                    welcomeText.classList.remove('slide-down');
+                    caution.classList.remove('slide-down');
+                    options.classList.remove('slide-down');
+                    circleContainer.classList.remove('slide-down');
+                }, 300); // Match this duration with your CSS transition duration
+        
+                container.classList.remove('transparent-bg');
+            });
+        });
+        
+        //SEND MESSAGE 
+        function sendMessage() {
+            const messageInput = document.querySelector('#chat-input textarea');
+            if (!messageInput) {
+                console.error('Message input not found');
+                return;
+            }
+        
+            let chatMessages = document.querySelector('#chat-messages');
+        
+            // Check if chat-messages exists and create if it doesn't
+            if (!chatMessages) {
+                chatMessages = document.createElement('div');
+                chatMessages.id = 'chat-messages';
+                chatMessages.className = 'chat-messages';
+                document.body.appendChild(chatMessages); // Append to the body instead of a specific container
+            }
+        
+            const userMessage = messageInput.value.trim();
+        
+            if (userMessage === '') return;
+        
+            // Create user message bubble
+            const userBubble = document.createElement('div');
+            userBubble.className = 'chat-bubble user-message';
+            userBubble.innerHTML = `${userMessage}`;
+            chatMessages.appendChild(userBubble);
+        
+            // Clear input field
+            messageInput.value = '';
+        
+            // Show typing animation
+            const typingBubble = document.createElement('div');
+            typingBubble.className = 'chat-bubble typing-animation';
+            typingBubble.innerHTML = `<span class="typing-dots">...</span>`;
+            chatMessages.appendChild(typingBubble);
+        
+            // Scroll to the bottom of the chat messages
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+            // Simulate a delay for preparing the response
+            setTimeout(function() {
+                // Remove typing animation
+                typingBubble.remove();
+        
+                // Send the user message to the server and get a response
+                fetch('/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        queryType: 'scrape', // Correct the queryType
+                        message: userMessage
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const headingText = userMessage;
+                    const textResults = [];
+                    const linkResults = [];
+                    const uniqueSentences = new Set();
+        
+                    // Separate text and link results
+                    if (data.answers && data.answers.length > 0) {
+                        data.answers.forEach(answer => {
+                            if (answer.startsWith('http')) {
+                                linkResults.push(answer);
+                            } else {
+                                textResults.push(answer);
+                            }
+                        });
+                    }
+        
+                    // Filter the text results
+                    const filteredTextResults = textResults.join(' ').split('. ').filter(sentence => {
+                        const lowerCaseSentence = sentence.toLowerCase().trim();
+                        const isValid = !lowerCaseSentence.includes('www') && 
+                                        !lowerCaseSentence.includes('sources') && 
+                                        !lowerCaseSentence.includes('learn more') && 
+                                        !lowerCaseSentence.includes('.gov') && 
+                                        !lowerCaseSentence.includes('.org') && 
+                                        !lowerCaseSentence.includes('.ca') && 
+                                        !lowerCaseSentence.includes('.com') && 
+                                        !lowerCaseSentence.includes('.net') && 
+                                        !uniqueSentences.has(lowerCaseSentence);
+                        if (isValid) {
+                            uniqueSentences.add(lowerCaseSentence);
+                        }
+                        return isValid;
+                    }).join('. ');
+        
+                    // Create a response bubble
+                    const robotBubble = document.createElement('div');
+                    robotBubble.className = 'chat-bubble robot-message';
+        
+                    // Generate unique IDs for the heading and response targets
+                    const headingTargetId = `heading-target-${Date.now()}`;
+                    const responseTargetId = `response-target-${Date.now()}`;
+        
+                    robotBubble.innerHTML = `
+                        <div>
+                            <strong id="${headingTargetId}" class="heading-text">${headingText}</strong><br>
+                            <span id="${responseTargetId}"></span>
+                        </div>`;
+                    chatMessages.appendChild(robotBubble);
+        
+                    // Scroll to the bottom of the chat messages
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+                    // Call the typeWriter function to show the heading and response with a typing effect
+                    const headingElement = document.getElementById(headingTargetId);
+                    const responseElement = document.getElementById(responseTargetId);
+        
+                    if (headingElement && responseElement) {
+                        headingElement.innerHTML = '';
+                        typeWriter(headingText, headingElement, () => {
+                            typeWriter(filteredTextResults, responseElement, () => {
+                                // Delay the appearance of the separator line by 1 second
+                                setTimeout(function() {
+                                    // Create and append a separator line
+                                    const separatorLine = document.createElement('div');
+                                    separatorLine.className = 'separator-line';
+                                    chatMessages.appendChild(separatorLine);
+        
+                                    // Scroll to the bottom of the chat messages
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                }, 1000); // 1-second delay for the underline
+                            });
+                        });
+                    } else {
+                        console.error('Heading or response element not found');
+                    }
+        
+                    // Display links if any
+                    if (linkResults.length > 0) {
+                        const linksHeader = document.createElement('h2');
+                        linksHeader.textContent = 'Links:';
+                        chatMessages.appendChild(linksHeader);
+        
+                        linkResults.forEach(link => {
+                            const a = document.createElement('a');
+                            a.href = link;
+                            a.textContent = link;
+                            a.target = '_blank';
+                            chatMessages.appendChild(a);
+                            chatMessages.appendChild(document.createElement('br'));
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, 10); // Adjust the delay as needed
+        }
+        
+        
+        function typeWriter(text, element, callback, i = 0, speed = 5) {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(function() {
+                    typeWriter(text, element, callback, i, speed);
+                }, speed); // Use the speed parameter for delay
+            } else if (callback) {
+                callback(); // Call the callback function when typing is complete
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/user')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Populate profile details
+                        document.getElementById('profile-name').textContent = data.user.name || 'N/A';
+                        document.getElementById('profile-surname').textContent = data.user.surname || 'N/A';
+                        document.getElementById('profile-email').textContent = data.user.email || 'N/A';
+                        document.getElementById('profile-phone').textContent = data.user.phone || 'N/A';
+                        document.getElementById('profile-location').textContent = data.user.address || 'N/A';
+                        document.getElementById('user-name').textContent = data.user.name || 'User';
+        
+                        // Display uploaded image if available
+                        const uploadedImage = document.getElementById('uploaded-image');
+                        const defaultIcon = document.getElementById('default-icon'); // Get the default icon
+                        if (data.user.profileImage) {
+                            uploadedImage.src = `data:image/jpeg;base64,${data.user.profileImage}`;
+                            uploadedImage.style.display = 'block';
+                            defaultIcon.style.display = 'none'; // Hide the default icon
+
+                            uploadedImage.onerror = function() {
+                                alert('Error loading image. Please try again later.');
+                                uploadedImage.style.display = 'none'; // Hide the image if there's an error
+                            };
+                        } else {
+                            alert('No image available.');
+                            uploadedImage.style.display = 'none'; // Hide the image if none is provided
+                        }
+                    } else {
+                        window.location.href = '/'; // Redirect to login page
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    alert('An error occurred while fetching user data. Please try again later.');
+                    window.location.href = '/'; // Redirect to login page
+                });
+        });
+        
+
+        document.getElementById('close-appointment').addEventListener('click', function() {
+            hideAppointmentContainer();
+        });
+        
+        
+
+        //emergency container
+        document.getElementById('emergency-btn').addEventListener('click', function() {
+            var container = document.getElementById('emergency-container');
+            var loadingAnimation = document.getElementById('loading-animation');
+            var isContainerVisible = container.style.display === 'block';
+            
+            // Initially hide the container
+            container.style.display = 'none';
+            
+            // Make an AJAX request to check if there's an existing emergency
+            fetch('/check-emergency', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.isEmergencyOngoing) {
+                    // Show loading animation if there's an existing emergency
+                    loadingAnimation.style.display = 'flex';
+                } else {
+                    // Hide loading animation if there's no existing emergency
+                    loadingAnimation.style.display = 'none';
+                }
+        
+                // Toggle container visibility
+                container.style.display = isContainerVisible ? 'none' : 'block';
+        
+                if (data.isEmergencyOngoing) {
+                    // If there's an existing emergency, hide the proceed button and dropdowns
+                    document.getElementById('proceed-btn').style.display = 'none';
+                    document.getElementById('emergency-reason').style.display = 'none';
+                    document.getElementById('Residence-select').style.display = 'none';
+                } else {
+                    // If there's no existing emergency, show everything as is
+                    document.getElementById('proceed-btn').style.display = 'block';
+                    document.getElementById('emergency-reason').style.display = 'block';
+                    document.getElementById('Residence-select').style.display = 'block';
+                }
+        
+                if (!isContainerVisible) {
+                    // Add blur and disable pointer events on everything else
+                    document.getElementById('container').classList.add('blur');
+                    document.getElementById('sidebar').classList.add('blur');
+                    document.getElementById('profile-btn').classList.add('blur');
+                    document.getElementById('close-btn').classList.add('blur');
+                    document.getElementById('chat-input').classList.add('blur');
+            
+                    document.getElementById('container').style.pointerEvents = 'none';
+                    document.getElementById('sidebar').style.pointerEvents = 'none';
+                    document.getElementById('profile-btn').style.pointerEvents = 'none';
+                    document.getElementById('close-btn').style.pointerEvents = 'none';
+                    document.getElementById('chat-input').style.pointerEvents = 'none';
+            
+                    // Add blur and disable pointer events on chat messages if they exist
+                    const chatMessages = document.getElementById('chat-messages');
+                    if (chatMessages) {
+                        chatMessages.classList.add('blur');
+                        chatMessages.style.pointerEvents = 'none';
+                    }
+                } else {
+                    // Remove blur and re-enable pointer events on everything else
+                    document.getElementById('container').classList.remove('blur');
+                    document.getElementById('sidebar').classList.remove('blur');
+                    document.getElementById('profile-btn').classList.remove('blur');
+                    document.getElementById('close-btn').classList.remove('blur');
+                    document.getElementById('chat-input').classList.remove('blur');
+            
+                    document.getElementById('container').style.pointerEvents = 'auto';
+                    document.getElementById('sidebar').style.pointerEvents = 'auto';
+                    document.getElementById('profile-btn').style.pointerEvents = 'auto';
+                    document.getElementById('close-btn').style.pointerEvents = 'auto';
+                    document.getElementById('chat-input').style.pointerEvents = 'auto';
+            
+                    // Remove blur and re-enable pointer events on chat messages if they exist
+                    const chatMessages = document.getElementById('chat-messages');
+                    if (chatMessages) {
+                        chatMessages.classList.remove('blur');
+                        chatMessages.style.pointerEvents = 'auto';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error checking emergency status:', error);
+                // Hide loading animation in case of error
+                loadingAnimation.style.display = 'none';
+            });
+        });        
+        
+        
+        document.getElementById('close-emergency').addEventListener('click', function() {
+            closeEmergencyContainer();
+        });
+        
+       function closeEmergencyContainer() {
+            document.getElementById('emergency-container').style.display = 'none';
+            
+            // Remove blur from all elements
+            document.getElementById('container').classList.remove('blur');
+            document.getElementById('sidebar').classList.remove('blur');
+            document.getElementById('profile-btn').classList.remove('blur');
+            document.getElementById('close-btn').classList.remove('blur');
+            document.getElementById('chat-input').classList.remove('blur');
+            document.getElementById('emergency-btn').classList.remove('blur');
+
+            // Remove blur and re-enable pointer events on chat messages if they exist
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                chatMessages.classList.remove('blur');
+                chatMessages.style.pointerEvents = 'auto';
+            }
+
+            // Re-enable pointer events for all elements
+            document.getElementById('container').style.pointerEvents = 'auto';
+            document.getElementById('sidebar').style.pointerEvents = 'auto';
+            document.getElementById('profile-btn').style.pointerEvents = 'auto';
+            document.getElementById('close-btn').style.pointerEvents = 'auto';
+            document.getElementById('chat-input').style.pointerEvents = 'auto';
+        }
+        
+
+        function openMultiplePages() {
+            // Open the Agent page immediately
+            window.open('/agent', '_blank');
+            window.open('/Client', '_blank');
+
+        }
+       
+        //shited
+        //shited
+        document.getElementById('close-btn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+            document.getElementById('close-btn').classList.toggle('rotated');
+            document.getElementById('container').classList.toggle('shifted');
+            document.getElementById('chat-input').classList.toggle('shifted');
+            document.getElementById('chat-messages').classList.toggle('shifted');
+
+        });
+
+        // Event listener for the mode button
+        document.getElementById('mode-btn').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.getElementById('mode-options').classList.toggle('active');
+        });
+
+        // Event listener for each mode option
+        document.querySelectorAll('.mode-option').forEach(option => {
+            option.addEventListener('click', function(event) {
+                event.stopPropagation();
+                document.querySelectorAll('.mode-option').forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                let isDarkMode = this.textContent === 'Dark';
+
+                // Close the mode options menu
+                document.getElementById('mode-options').classList.remove('active');
+                document.getElementById('mode-btn').classList.remove('active');
+
+                // Delay the execution of toggleDarkMode
+                setTimeout(() => {
+                    toggleDarkMode(isDarkMode);
+                }, 0);
+            });
+        });
+
+        // Event listener for closing the mode options when clicking outside
+        document.addEventListener('click', function(event) {
+            var isClickInsideModeBtn = document.getElementById('mode-btn').contains(event.target);
+            var isClickInsideModeOptions = document.getElementById('mode-options').contains(event.target);
+
+            if (!isClickInsideModeBtn && !isClickInsideModeOptions) {
+                // Close the mode options menu
+                document.getElementById('mode-options').classList.remove('active');
+                document.getElementById('mode-btn').classList.remove('active');
+            }
+        });
+
+        function toggleDarkMode(enable) {
+            const elements = [
+                'body',
+                'sidebar',
+                'close-btn',
+                'close-profile-btn',
+                'profile-btn',
+                'emergency-btn',
+                'profile-container',
+                'container',
+                'info-text',
+                'caution',
+                'chat-input',
+                'appointment-heading',
+                'appointment-container',
+                'close-appointment',
+                'book-appointment',
+                'update-appointment',
+                'delete-appointment',
+                'emergency-heading',
+                'emergency-container',
+                'close-emergency',
+                'proceed-btn',
+            ];
+            elements.forEach(id => {
+                const element = document.getElementById(id) || document.querySelector('.' + id);
+                if (element) {
+                    element.classList.toggle('dark-mode', enable);
+                }
+            });
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.toggle('dark-mode', enable);
+            });
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.toggle('dark-mode', enable);
+            });
+            document.querySelectorAll('.mode-option').forEach(option => {
+                option.classList.toggle('dark-mode', enable);
+            });
+
+            // Ensure these elements exist before toggling the class
+            const elementsToToggle = [
+                'body',
+                'caution',
+                '.circle',
+                'info-text',
+                '.chat-input input',
+                '.chat-input button',
+                '.mode-options',
+                '.profile-heading',
+                '.profile-content h2'
+            ];
+            elementsToToggle.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.classList.toggle('dark-mode', enable);
+                }
+            });
+
+            document.querySelectorAll('.profile-content p').forEach(p => {
+                p.classList.toggle('dark-mode', enable);
+            });
+            const uploadButton = document.getElementById('upload-button');
+            if (uploadButton) {
+                uploadButton.classList.toggle('dark-mode', enable);
+            }
+            const changeDetailsBtn = document.getElementById('change-details-btn');
+            if (changeDetailsBtn) {
+                changeDetailsBtn.classList.toggle('dark-mode', enable);
+            }
+        }
+
+        //Profile and blur effects
+        document.getElementById('profile-btn').addEventListener('click', function() {
+            document.getElementById('profile-container').style.display = 'flex';
+        
+            // Add blur and disable pointer events on all other elements
+            document.getElementById('container').classList.add('blur');
+            document.getElementById('sidebar').classList.add('blur');
+            document.getElementById('emergency-btn').classList.add('blur');
+            document.getElementById('profile-btn').classList.add('blur');
+            document.getElementById('close-btn').classList.add('blur');
+            document.getElementById('chat-input').classList.add('blur');
+        
+            // Add blur and disable pointer events on chat messages if they exist
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                chatMessages.classList.add('blur');
+                chatMessages.style.pointerEvents = 'none';
+            }
+        
+            document.getElementById('container').style.pointerEvents = 'none';
+            document.getElementById('sidebar').style.pointerEvents = 'none';
+            document.getElementById('emergency-btn').style.pointerEvents = 'none';
+            document.getElementById('profile-btn').style.pointerEvents = 'none';
+            document.getElementById('close-btn').style.pointerEvents = 'none';
+            document.getElementById('chat-input').style.pointerEvents = 'none';
+        });
+        
+        document.getElementById('close-profile-btn').addEventListener('click', function() {
+            document.getElementById('profile-container').style.display = 'none';
+        
+            // Remove blur and re-enable pointer events on all other elements
+            document.getElementById('container').classList.remove('blur');
+            document.getElementById('sidebar').classList.remove('blur');
+            document.getElementById('emergency-btn').classList.remove('blur');
+            document.getElementById('profile-btn').classList.remove('blur');
+            document.getElementById('close-btn').classList.remove('blur');
+            document.getElementById('chat-input').classList.remove('blur');
+        
+            // Define chatMessages and remove blur and re-enable pointer events on it if it exists
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                chatMessages.classList.remove('blur');
+                chatMessages.style.pointerEvents = 'auto';
+            }
+        
+            document.getElementById('container').style.pointerEvents = 'auto';
+            document.getElementById('sidebar').style.pointerEvents = 'auto';
+            document.getElementById('emergency-btn').style.pointerEvents = 'auto';
+            document.getElementById('profile-btn').style.pointerEvents = 'auto';
+            document.getElementById('close-btn').style.pointerEvents = 'auto';
+            document.getElementById('chat-input').style.pointerEvents = 'auto';
+        });
+
+
+        function autoGrow(element) {
+
+        }
+
+
+        document.getElementById('agentChatButton').addEventListener('click', function() {
+            window.location.href = '/agent';
+        });
+
+
+        // Appointment button
+      // Appointment button
+const sidebar = document.getElementById('sidebar');
+
+sidebar.addEventListener('click', async(event) => {
+    const targetElement = event.target;
+    const targetId = targetElement.id;
+    const targetParent = targetElement.parentElement;
+
+    if (targetId === 'appointment-btn' || targetParent.id === 'appointment-btn') {
+        try {
+            const response = await fetch('/get-appointment');
+            const result = await response.json();
+
+            if (result.success) {
+                const appointmentData = result.appointment;
+
+                // Convert the date to local time zone
+                let appointmentDate = new Date(appointmentData.Appointment_date);
+                let formattedDate = appointmentDate.toISOString().split('T')[0];
+
+                // Display appointment data
+                document.getElementById('appointment-date').value = formattedDate;
+                document.getElementById('appointment-time').value = appointmentData.Appointment_time;
+                document.getElementById('appointment-reason').value = appointmentData.Appointment_Description;
+                document.getElementById('appointment-status').value = appointmentData.status;
+
+                // Show Update and Delete buttons
+                document.getElementById('book-appointment').style.display = 'none';
+                document.getElementById('update-appointment').style.display = 'inline-block';
+                document.getElementById('delete-appointment').style.display = 'inline-block';
+            } else {
+                // No appointment found, handle UI updates
+                document.getElementById('book-appointment').style.display = 'inline-block';
+                document.getElementById('update-appointment').style.display = 'none';
+                document.getElementById('delete-appointment').style.display = 'none';
+            }
+
+            toggleAppointmentContainer();
+        } catch (error) {
+            console.error('Error in click event handler:', error);
+            alert('There was an error processing your request. Please try again later.');
+        }
+    } else if (targetId === 'close-appointment' || targetParent.id === 'close-appointment') {
+        hideAppointmentContainer();
+    }
+});
+
+
+        const appointmentContainer = document.getElementById('appointment-container');
+
+        function toggleAppointmentContainer() {
+            const isVisible = appointmentContainer.style.display === 'block';
+            appointmentContainer.style.display = isVisible ? 'none' : 'block';
+        
+            if (!isVisible) {
+                // Blur all sidebar sections except for the appointment container
+                blurSidebarExceptAppointment();
+        
+                // Add blur and disable pointer events on main container, sidebar, and fixed buttons
+                document.getElementById('container').classList.add('blur');
+                document.getElementById('emergency-btn').classList.add('blur');
+                document.getElementById('profile-btn').classList.add('blur');
+                document.getElementById('close-btn').classList.add('blur');
+                document.getElementById('chat-input').classList.add('blur');
+        
+                // Check if 'chat-messages' exists and apply blur
+                const chatMessages = document.getElementById('chat-messages');
+                if (chatMessages) {
+                    chatMessages.classList.add('blur');
+                    chatMessages.style.pointerEvents = 'none';
+                }
+        
+                document.getElementById('container').style.pointerEvents = 'none';
+                document.getElementById('emergency-btn').style.pointerEvents = 'none';
+                document.getElementById('profile-btn').style.pointerEvents = 'none';
+                document.getElementById('close-btn').style.pointerEvents = 'none';
+                document.getElementById('chat-input').style.pointerEvents = 'none';
+            } else {
+                // Remove blur and re-enable pointer events on main container, sidebar, and fixed buttons
+                document.getElementById('container').classList.remove('blur');
+                document.getElementById('emergency-btn').classList.remove('blur');
+                document.getElementById('profile-btn').classList.remove('blur');
+                document.getElementById('close-btn').classList.remove('blur');
+                document.getElementById('chat-input').classList.remove('blur');
+        
+                // Check if 'chat-messages' exists and remove blur
+                const chatMessages = document.getElementById('chat-messages');
+                if (chatMessages) {
+                    chatMessages.classList.remove('blur');
+                    chatMessages.style.pointerEvents = 'auto';
+                }
+        
+                document.getElementById('container').style.pointerEvents = 'auto';
+                document.getElementById('emergency-btn').style.pointerEvents = 'auto';
+                document.getElementById('profile-btn').style.pointerEvents = 'auto';
+                document.getElementById('close-btn').style.pointerEvents = 'auto';
+                document.getElementById('chat-input').style.pointerEvents = 'auto';
+            }
+        }
+        
+
+
+        function hideAppointmentContainer() {
+            appointmentContainer.style.display = 'none';
+        
+            // Remove blur from all sidebar sections
+            const sidebarItems = sidebar.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.classList.remove('blur');
+                item.style.pointerEvents = 'auto';
+            });
+        
+            // Remove blur and re-enable pointer events on main container, sidebar, and fixed buttons
+            document.getElementById('container').classList.remove('blur');
+            document.getElementById('emergency-btn').classList.remove('blur');
+            document.getElementById('profile-btn').classList.remove('blur');
+            document.getElementById('close-btn').classList.remove('blur');
+            document.getElementById('chat-input').classList.remove('blur');
+        
+            document.getElementById('container').style.pointerEvents = 'auto';
+            document.getElementById('emergency-btn').style.pointerEvents = 'auto';
+            document.getElementById('profile-btn').style.pointerEvents = 'auto';
+            document.getElementById('close-btn').style.pointerEvents = 'auto';
+            document.getElementById('chat-input').style.pointerEvents = 'auto';
+        
+            // Remove blur from chat messages if they exist
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+                chatMessages.classList.remove('blur');
+                chatMessages.style.pointerEvents = 'auto';
+            }
+        }
+
+        // Function to blur all sidebar sections except for the appointment container
+        function blurSidebarExceptAppointment() {
+            const sidebarItems = sidebar.querySelectorAll('.sidebar-item');
+
+            sidebarItems.forEach(item => {
+                if (item.id !== 'appointment-container') {
+                    item.classList.add('blur');
+                    item.style.pointerEvents = 'none';
+                }
+            });
+        }
+
+        // Function to make textarea auto-expandable
+        const reasonField = document.getElementById('appointment-reason');
+
+        function autoGrowTextarea(element) {
+            element.style.height = 'auto';
+            element.style.height = (element.scrollHeight) + 'px';
+        }
+
+        if (reasonField) {
+            reasonField.addEventListener('input', () => {
+                autoGrowTextarea(reasonField);
+            });
+            autoGrowTextarea(reasonField);
+        }
+
+        //initialize time
+        // Initialize time
+        const minTime = '08:00';
+        const maxTime = '13:00';
+        const timeInput = document.getElementById('appointment-time');
+
+        timeInput.setAttribute('min', minTime);
+        timeInput.setAttribute('max', maxTime);
+
+        // Initialize date
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const formattedDate = tomorrow.toISOString().split('T')[0];
+        document.getElementById('appointment-date').setAttribute('min', formattedDate);
+
+        function isTimeValid(time) {
+            return time >= minTime && time <= maxTime;
+        }
+
+        // Restrict time selection to valid range
+        timeInput.addEventListener('change', () => {
+            const time = timeInput.value;
+            if (!isTimeValid(time)) {
+                alert('Please select a time between 08:00 and 13:00.');
+                timeInput.value = ''; // Clear invalid timezzzzzzzzz
+            }
+        });
+
+
+        //Appointments
+        //Appointments
+        //Appointments
+        document.getElementById('book-appointment').addEventListener('click', async() => {
+            const date = document.getElementById('appointment-date').value;
+            const time = document.getElementById('appointment-time').value;
+            const reason = document.getElementById('appointment-reason').value;
+
+            if (!date || !time || !reason) {
+                alert('Please fill in all appointment details.');
+                return;
+            }
+
+            if (!isTimeValid(time)) {
+                alert('Please select a time between 08:00 and 13:00.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/book-appointment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date,
+                        time,
+                        reason
+                    })
+                });
+
+                if (response.ok) {
+                    hideAppointmentContainer();
+                    setTimeout(() => {
+                        alert('Appointment booked successfully!');
+                    }, 100);
+                } else {
+                    alert('There was an error booking your appointment. Please try again later.');
+                }
+            } catch (error) {
+                console.error('Error booking appointment:', error);
+                alert('There was an error booking your appointment. Please try again later.');
+            }
+        });
+
+
+        document.getElementById('update-appointment').addEventListener('click', async() => {
+            const date = document.getElementById('appointment-date').value;
+            const time = document.getElementById('appointment-time').value;
+            const reason = document.getElementById('appointment-reason').value;
+
+            if (!date || !time || !reason) {
+                alert('Please fill in all appointment details.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/update-appointment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date,
+                        time,
+                        reason
+                    })
+                });
+
+                if (response.ok) {
+                    hideAppointmentContainer();
+                    setTimeout(() => {
+                        alert('Appointment updated successfully!');
+                    }, 100);
+                } else {
+                    alert('There was an error updating your appointment. Please try again later.');
+                }
+            } catch (error) {
+                console.error('Error updating appointment:', error);
+                alert('There was an error updating your appointment. Please try again later.');
+            }
+        });
+
+
+
+        document.getElementById('delete-appointment').addEventListener('click', async() => {
+            try {
+                const response = await fetch('/delete-appointment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Clear appointment fields
+                    document.getElementById('appointment-date').value = '';
+                    document.getElementById('appointment-time').value = '';
+                    document.getElementById('appointment-reason').value = '';
+
+                    hideAppointmentContainer();
+                    setTimeout(() => {
+                        alert('Appointment deleted successfully!');
+                    }, 100);
+                } else {
+                    alert('There was an error deleting your appointment. Please try again later.');
+                }
+            } catch (error) {
+                console.error('Error deleting appointment:', error);
+                alert('There was an error deleting your appointment. Please try again later.');
+            }
+        });
+
+        document.getElementById('proceed-btn').addEventListener('click', async () => {
+            const reason = document.getElementById('emergency-reason').value;
+            const residence = document.getElementById('Residence-select').value;
+            const location = document.getElementById('location').innerText;
+        
+            console.log('Reason:', reason);
+            console.log('Residence:', residence);
+            console.log('Location:', location);
+        
+            if (!reason || !residence || !location) {
+                alert('Please fill in all emergency details.');
+                return;
+            }
+        
+            try {
+                const response = await fetch('/report-emergency', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reason,
+                        residence,
+                        location
+                    })
+                });
+        
+                if (response.ok) {
+                    closeEmergencyContainer();
+        
+                    // Fetch the user's phone number from the server
+                    const phoneResponse = await fetch('/get-user-phone');
+                    if (!phoneResponse.ok) {
+                        throw new Error('Failed to fetch user phone number.');
+                    }
+                    const { phone } = await phoneResponse.json();
+        
+                    // Send SMS to the user
+                    fetch('/send-sms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            to: [phone],
+                            body: `Emergency reported:\nReason: ${reason}\nResidence: ${residence}\nLocation: ${location}\n\nPlease wait while we contact the clinic.`
+                        })
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log('User SMS response:', data);
+                    })
+                    .catch(error => {
+                        alert('Error sending message to user: ' + error.message);
+                        console.error(error);
+                    });
+        
+                    // Send SMS to the admin
+                    fetch('/send-sms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            to: ['+27785258483'], // Admin's phone number
+                            body: `!!Emergency at location\nLocation: ${location}\n\nPlease attend`
+                        })
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert('Message sent to admin successfully!');
+                        console.log('Admin SMS response:', data);
+                    })
+                    .catch(error => {
+                        alert('Error sending message to admin: ' + error.message);
+                        console.error(error);
+                    });
+        
+                    setTimeout(() => {
+                        alert('Emergency requested. NWU Emergency Unit/' + residence + ' Current Affairs unit will be in contact with you shortly.');
+                    }, 100);
+                } else {
+                    alert('There was an error reporting your emergency. Please try again later.');
+                }
+            } catch (error) {
+                console.error('Error reporting emergency:', error);
+                alert('There was an error reporting your emergency. Please try again later.');
+            }
+        });        
+        
+        
+        //map
+        let map;
+        let geocoder;
+        //map geo
+        function initMap() {
+            // Check if Google Maps API has loaded correctly
+            if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+                console.error('Google Maps API failed to load.');
+                return;
+            }
+
+            // Create a new map instance
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: 0,
+                    lng: 0
+                }, // Default center if geolocation fails
+                zoom: 15 // Adjust the zoom level as needed
+            });
+
+            // Create a new geocoder instance
+            geocoder = new google.maps.Geocoder();
+
+            // Try HTML5 geolocation
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(function(position) {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Create or update a marker for the current location
+                    if (!window.marker) {
+                        window.marker = new google.maps.Marker({
+                            position: pos,
+                            map: map,
+                            title: 'Your current location'
+                        });
+                    } else {
+                        window.marker.setPosition(pos);
+                    }
+
+                    map.setCenter(pos);
+
+                    // Reverse geocode the position to get the street name
+                    geocoder.geocode({
+                        'location': pos
+                    }, function(results, status) {
+                        if (status === 'OK') {
+                            if (results[0]) {
+                                document.getElementById('location').innerText = `${results[0].formatted_address}`;
+                            } else {
+                                document.getElementById('location').innerText = 'No results found';
+                            }
+                        } else {
+                            document.getElementById('location').innerText = `Geocoder failed due to: ${status}`;
+                        }
+                    });
+                }, function() {
+                    handleLocationError(true);
+                });
+            } else {
+                // Browser doesn't support Geolocation
+                handleLocationError(false);
+            }
+        }
+
+        function handleLocationError(browserHasGeolocation) {
+            alert(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+
+            // Default to center of the map (0, 0) if geolocation fails
+            map.setCenter({
+                lat: 0,
+                lng: 0
+            });
+            document.getElementById('location').innerText = 'Error: Unable to retrieve your location.';
+        }
+
+    </script>
+
+</body>
+
+</html>

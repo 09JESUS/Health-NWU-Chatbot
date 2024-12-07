@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello, World!</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="profile-container" class="profile-container">
+      <div class="profile-content">
+        <div class="profile-heading">
+          <span>My Profile</span>
+          <!-- X button for closing profile -->
+          <div class="close-profile-btn" id="close-profile-btn">
+            <i class="fas fa-close"></i>
+          </div>
+        </div>
+        <div class="profile-info">
+          <div class="profile-icon">
+            <i class="fas fa-user" id="default-icon"></i>
+            <img id="uploaded-image" alt="Profile Image">
+            <input type="file" id="image-upload" accept="image/*">
+          </div>
+          <div class="profile-details">
+            <p><strong>Name:</strong> <span id="profile-name"> Muhe </span></p>
+            <p><strong>Surname:</strong> <span id="profile-surname"> Mbunda </span></p>
+            <p><strong>Email:</strong> <span id="profile-email">Muhle@gmail.com</span></p>
+            <p><strong>Phone Number:</strong> <span id="profile-phone">54343535</span></p>
+            <p><strong>Location:</strong> <span id="profile-location">siduf s</span></p>
+          </div>
+        </div>
+        <div class="btns" id="btns">
+          <!-- Change button text to "Change Details" -->
+          <button id="change-details-btn">Update Details</button>
+          <label for="image-upload" id="upload-button">Upload</label>
+          <button id="update-details-btn" class="hidden2">Update</button>
+        </div>     
+      </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/ab5215fb7e.js" crossorigin="anonymous"></script>
+    <script>
+        let newPasswordField = null;
+        let confirmPasswordField = null;
+
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const uploadedImage = document.getElementById('uploaded-image');
+                    const defaultIcon = document.getElementById('default-icon');
+                    uploadedImage.src = e.target.result;
+                    uploadedImage.style.display = 'block'; // Ensure the image is displayed
+                    defaultIcon.style.display = 'none'; // Hide the default icon
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('change-details-btn').addEventListener('click', function() {
+            const profileDetails = document.querySelectorAll('.profile-details span');
+            profileDetails.forEach(span => {
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.value = span.textContent;
+              span.parentNode.replaceChild(input, span);
+            });
+        
+            // Add new password fields and save the references
+            const profileDetailsDiv = document.querySelector('.profile-details');
+            newPasswordField = document.createElement('p');
+            newPasswordField.innerHTML = '<strong>New Password:</strong> <input type="password" id="new-password">';
+            profileDetailsDiv.appendChild(newPasswordField);
+        
+            confirmPasswordField = document.createElement('p');
+            confirmPasswordField.innerHTML = '<strong>Confirm Password:</strong> <input type="password" id="confirm-password">';
+            profileDetailsDiv.appendChild(confirmPasswordField);
+
+            // Hide Change Details button and show Update button
+            document.getElementById('change-details-btn').style.display = 'none';
+            document.getElementById('update-details-btn').classList.remove('hidden2');
+          });
+
+        document.getElementById('update-details-btn').addEventListener('click', function() {
+            const profileDetails = document.querySelectorAll('.profile-details input');
+            profileDetails.forEach(input => {
+              const span = document.createElement('span');
+              span.textContent = input.value;
+              input.parentNode.replaceChild(span, input);
+            });
+        
+            // Remove password fields using the stored references
+            if (newPasswordField) newPasswordField.remove();
+            if (confirmPasswordField) confirmPasswordField.remove();
+
+            // Hide Update button and show Change Details and Upload buttons
+            document.getElementById('update-details-btn').classList.add('hidden2');
+            document.getElementById('change-details-btn').style.display = 'inline-block';
+            document.getElementById('upload-button').style.display = 'inline-block';
+        });
+    </script>
+  </body>
+</html>

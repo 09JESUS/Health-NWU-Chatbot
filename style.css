@@ -1,0 +1,177 @@
+.profile-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #007bff; /* Background color */
+    color: white; /* Text color */
+    padding: 20px; /* Adjust padding as needed */
+    border-top-left-radius: 30px; /* Rounded corners */
+    border-top-right-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle effect */
+    font-size: 30px; /* Font size */
+    font-weight: bold; /* Bold text */
+    white-space: nowrap; /* Prevent text wrapping */
+    width: 100%; /* Background spans full width */
+    transform: translateX(80px)translateY(-40px);
+}
+
+.profile-heading span {
+    margin: 0 auto; /* Center align text */
+    max-width: 90%; /* Maximum width of the heading */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis (...) if text overflows */
+    white-space: nowrap; /* Prevent wrapping */
+    padding-top: 10px;
+}
+
+.profile-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1002;
+    display: block;
+    width: 80%;
+    max-width: 500px;
+    height: 60;
+    padding-top: 0px;
+}
+
+
+
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 40px;
+    transform: translateX(-80px);
+}
+
+.profile-content h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.profile-content p {
+    color: #666;
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.profile-content button {
+    padding: 12px 25px;
+    background-color: #5d93c1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transform: translateX(65px);
+}
+
+.profile-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.profile-details {
+    text-align: left;
+    flex: 1;
+    order: 2; /* Place the details on the right */
+    transform: translateX(60px);
+}
+
+.profile-icon {
+    /* Adjust icon size and color as needed */
+    font-size: 60px;
+    color: #007bff;
+    flex-shrink: 0;
+    order: 1; /* Place the icon on the left */
+    transform: translateX(40px);
+    display: flex;
+    transform: translateX(150px);
+    display: flex;
+    width: 60%;
+}
+
+  
+  #upload-button:hover {
+    background-color: #0056b3; /* New background color on hover */
+  }
+  /* Position After Upload */
+  #upload-button.uploaded {
+    transform: translateX(0px)translateY(260px); 
+  }
+
+#change-details-btn:hover {
+    background-color: #0056b3; /* New background color on hover */
+}
+
+
+#uploaded-image {
+    width: 60%; /* Adjust as needed */
+    height: 250px; /* Adjust as needed */
+    border-radius: 10px; /* Adjust as needed */
+    display: none; /* Initially hidden */
+    transform: translateX(-40px);
+}
+
+#image-upload {
+ /* Hide the file upload input */
+ transform: translateY(1000px);
+ display: none;
+}
+
+
+
+.btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse;
+    transform: translateX(50px);
+
+}
+
+#upload-button {
+    padding: 10px 20px;
+    background-color: #5d93c1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+    height: 17px;
+    margin-right: 60px;
+    transform: translateX(-15px);
+}
+
+.update-details-btn{
+    display: none;
+}
+
+#update-details-btn {
+    background-color: #0056b3; /* New background color on hover */
+  }
+
+#update-details-btn:hover {
+    background-color: #4CAF50; /* Different color for Update button */
+}
+  
+  .hidden2 {
+    display: none;
+  }

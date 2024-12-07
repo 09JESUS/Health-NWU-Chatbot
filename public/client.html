@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Chat Interface</title>
+    <link rel="stylesheet" href="styles_client && User.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        
+        .loading-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        .loader {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #3498db; /* Choose a color for the loader */
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.537);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        
+        .blur {
+            filter: blur(5px);
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="sidebar" id="sidebar">
+            <div class="back" >
+              <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="user-item" id = user-item>
+                <span class="user-name" id="user-name">Request</span>
+                <span class="status online"></span>
+            </div>
+        </div>
+
+        <div class="chat-area" id="chat-area">
+      
+            <div class="chat-header">
+                <div class="options-container">
+                    <div class="Options" id="mode-btn">
+                        <span>Mode</span>
+                        <div class="mode-options" id="mode-options">
+                            <div class="mode-option">Light</div> 
+                            <div class="mode-option">Dark</div> 
+                        </div>
+                    </div>
+
+                    <div class="Options" id ="report-btn">
+                        <span>Report</span>
+                    </div>
+
+                </div>
+                <h2>Chats Here</h2>
+            </div>
+
+             <div class="header2" id="header2">
+                <div class="logout" id="logout">
+                    <i class="fas fa-door-open"></i>
+                    <div class="tooltip">Leave Chat</div>
+                 </div>
+                 <div class="username" id="username">
+                    <span></span>
+                 </div>
+             </div>
+            <div class="chat-history" id="chat-history" >
+
+            </div>
+            <div class="chat-input">
+                <textarea id="messageInput" placeholder="Type a message..."></textarea>
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+        <div class="request-container" id="request-container" >
+          <div class="profile-heading2" id="profile-heading2">
+            <span>Requests</span>
+            <div class="fas fa-close" id="close-request-btn"></div>
+          </div>
+        </div>
+        <div id="loading-container" class="loading-container">
+            <div class="loader"></div>
+        </div>
+        <div class="report-container" id="report-container" >
+            <div class="Report-content">
+                <div class="report-heading" id="report-heading">
+                    <span>Report an Issue</span>
+                    <div id="close-report-btn" class="fas fa-close"></div>
+                </div>
+                <div class="report-info">
+                    <div class="report-details">
+                        <p><strong>Issue Description:</strong></p>
+                        <textarea id="issue-description" rows="5" placeholder="Describe the issue you're facing..."></textarea>
+                    </div>
+                </div>
+                <button class="submit-report" id="submit-report">Submit Report</button>
+            </div>
+        </div>
+        
+    </div>
+    <script src="https://kit.fontawesome.com/ab5215fb7e.js" crossorigin="anonymous"></script>
+
+    <script >
+
+      document.addEventListener("DOMContentLoaded", () => {
+
+      let isRequestAccepted = false;
+      let currentChatRequestId = null;
+      let agentName = "User";      
+      let alertShown = false;
+
+        // Function to format timestamps for display
+        function formatTimestamp(timestamp) {
+          const date = new Date(timestamp);
+          const hours = date.getHours();
+          const minutes = date.getMinutes();
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+          const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+          return `${formattedHours}:${formattedMinutes} ${ampm}`;
+        }                 
+                
+        function showLoading() {
+            document.getElementById('loading-container').style.display = 'flex'; // Show loader
+            document.querySelectorAll('#container > *:not(#loading-container)').forEach(element => {
+                element.classList.add('blur');
+            });
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading-container').style.display = 'none'; // Hide loader
+            document.querySelectorAll('#container > *:not(#loading-container)').forEach(element => {
+                element.classList.remove('blur');
+            });
+        }
+        
+        let checkInterval;
+        let deleteTimeout;
+        
+        document.querySelector('.user-name').addEventListener('click', () => {
+            document.getElementById('chat-history').innerHTML = '';
+            alertShown = false;
+            showLoading();
+        
+            // Clear previous timeout and interval if they exist
+            if (deleteTimeout) {
+                clearTimeout(deleteTimeout);
+            }
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
+        
+            isRequestAccepted = false; // Reset the acceptance flag
+        
+            // Fetch request without including the email in the body
+            fetch('/request-agent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // Remove body since we are fetching email from session on the server
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data.message);
+                alert(data.message); // Notify user that request is submitted
+        
+                if (data.success) {
+                    currentChatRequestId = data.requestId; // Store the Request_id
+        
+                    // Set a timeout to delete the request if not accepted in 30 seconds
+                    deleteTimeout = setTimeout(() => {
+                        if (!isRequestAccepted) {
+                            fetch(`/delete-request/${currentChatRequestId}`, {
+                                method: 'DELETE'
+                            })
+                            .then(response => response.json())
+                            .then(deleteData => {
+                                if (deleteData.success) {
+                                    alert('Agents are currently busy. Please try again after some time.');
+                                    hideLoading();
+                                    clearInterval(checkInterval); // Stop checking for acceptance
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Delete error:', error);
+                            });
+                        }
+                    }, 30000); // 30 seconds
+                }
+
+
+                // Check for agent acceptance every few seconds
+                // Check for agent acceptance every few seconds
+                checkInterval = setInterval(() => {
+                    fetch('/check-request-status') // No email in the URL
+                        .then(response => response.json())
+                        .then(statusData => {
+                            if (statusData.success && statusData.status === 'accepted') {
+                                hideLoading(); // Hide loading when accepted
+                                alert('Your request has been accepted by the agent.');
+                                clearInterval(checkInterval); // Stop checking
+                                clearTimeout(deleteTimeout); // Stop the deletion timeout
+                                isRequestAccepted = true;
+
+                                const logoutButton = document.getElementById('logout');
+                                const usernameT = document.getElementById('username');
+                                if (logoutButton) {
+                                    logoutButton.style.display = "block";
+                                    usernameT.style.display = "block";
+                                }
+                                
+                                const req = document.getElementById('user-item');
+                                if (req) {
+                                    req.style.display = "none";
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fetch error:', error);
+                        });
+                }, 5000); // Check every 5 seconds
+
+        
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('An error occurred while processing your request.');
+            });
+        });
+        
+        
+          // Event listener for the mode button (You can customize this part)
+          const modeBtn = document.getElementById("mode-btn");
+          if (modeBtn) {
+            modeBtn.addEventListener("click", function () {
+              const modeOptions = document.getElementById("mode-options");
+              if (modeOptions) {
+                modeOptions.classList.toggle("active");
+              }
+            });
+          }
+      
+          document.querySelectorAll(".mode-option").forEach((option) => {
+            option.addEventListener("click", function (event) {
+              event.stopPropagation();
+              document.querySelectorAll(".mode-option").forEach((opt) =>
+                opt.classList.remove("active")
+              );
+              this.classList.add("active");
+              let isDarkMode = this.textContent === "Dark";
+              const modeOptions = document.getElementById("mode-options");
+              if (modeOptions) {
+                modeOptions.classList.remove("active");
+              }
+              toggleDarkMode(isDarkMode);
+            });
+          });
+      
+          document.addEventListener("click", function (event) {
+            const modeBtn = document.getElementById("mode-btn");
+            const modeOptions = document.getElementById("mode-options");
+            if (modeBtn && modeOptions) {
+              var isClickInsideModeBtn = modeBtn.contains(event.target);
+              var isClickInsideModeOptions = modeOptions.contains(event.target);
+              if (!isClickInsideModeBtn && !isClickInsideModeOptions) {
+                modeOptions.classList.remove("active");
+              }
+            }
+          });
+      
+          function toggleDarkMode(isDarkMode) {
+            if (isDarkMode) {
+              document.body.classList.add("dark-mode");
+            } else {
+              document.body.classList.remove("dark-mode");
+            }
+          }
+
+          // Event listener for send button
+// Event listener for send button
+
+
+const sendButton = document.getElementById("sendButton");
+if (sendButton) {
+    sendButton.addEventListener("click", () => {
+        const messageInput = document.getElementById("messageInput");
+        const messageText = messageInput.value.trim();
+
+        if (!currentChatRequestId || isRequestAccepted == false) {
+            alert('No active agents. Please send a request to talk to one.');
+            messageInput.value = "";
+            return; // Stop execution if Request_id is null or undefined.
+        }
+
+        if (messageText !== "") {
+            console.log('Button clicked, sending message:', messageText);
+
+            fetch('/sendU', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    message: messageText, 
+                    requestId: currentChatRequestId 
+                    // Removed email from here
+                }) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // Optionally, handle the response data here
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+            // Clear input field
+            messageInput.value = "";
+
+            // Display the message in the chat history
+            const chatHistory = document.getElementById("chat-history");
+            if (!chatHistory) {
+                console.error("Error: 'chat-history' element not found!");
+                return;
+            }
+
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("chat-message", "user");
+
+            const formattedTimestamp = formatTimestamp(new Date().toISOString());
+
+            messageElement.innerHTML = `
+                <p class="message">${messageText}</p>
+                <span class="timestamp">${formattedTimestamp}</span>
+            `;
+            chatHistory.appendChild(messageElement);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+    });
+}
+
+
+let isFetching = false;
+const MAX_RETRIES = 5;
+let fetchAttempt = 0;
+const displayedMessageIds = new Set();
+
+const fetchMessages = () => {
+    if (isFetching) return;
+    isFetching = true;
+
+    if (!currentChatRequestId) {
+        console.error('Error: Request ID is not available.');
+        isFetching = false;
+        return;
+    }
+
+    const attemptFetch = (retries) => {
+        fetch(`/fetchMessagesUser/${currentChatRequestId}`)
+            .then(response => response.json())
+            .then(data => {
+                isFetching = false;
+                fetchAttempt = 0;
+
+                if (data.success) {
+                    const chatHistory = document.getElementById("chat-history");
+                    if (!chatHistory) {
+                        console.error("Error: 'chat-history' element not found!");
+                        return;
+                    }
+
+                    if (data.messages.length > 0) {
+                        data.messages.forEach(message => {
+                            // Compare the message email with the email from the session passed by the server
+                            if (message.email !== data.userEmail && !displayedMessageIds.has(message.Message_id)) {
+                                const messageElement = document.createElement("div");
+                                messageElement.classList.add("chat-message", "agent");
+
+                                const formattedTimestamp = formatTimestamp(message.createdAt);
+
+                                messageElement.innerHTML = `
+                                    <p class="message">${message.message}</p>
+                                    <span class="timestamp">${formattedTimestamp}</span>
+                                `;
+                                chatHistory.appendChild(messageElement);
+                                
+                                // Add the message ID to the set of displayed IDs
+                                displayedMessageIds.add(message.Message_id);
+                            }
+                        });
+
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    }
+                } else {
+                    console.error('Error fetching messages:', data.message);
+                }
+            })
+            .catch((error) => {
+                isFetching = false;
+                fetchAttempt++;
+                console.error('Error:', error);
+                
+                if (fetchAttempt < retries) {
+                    console.log(`Retrying... Attempt ${fetchAttempt}/${retries}`);
+                    setTimeout(() => attemptFetch(retries), 1000); // Wait 1 second before retrying
+                } else {
+                    console.error('Max retries reached. Please try again later.');
+                }
+            });
+    };
+
+    attemptFetch(MAX_RETRIES);
+};
+
+// Fetch messages every 2 seconds
+setInterval(fetchMessages, 2000);
+
+
+// fetch agent name
+const logoutButton = document.getElementById('logout');
+const chatHistory = document.getElementById("chat-history");
+const us = document.getElementById("username");
+
+logoutButton.addEventListener('click', async () => {
+    const confirmLeave = window.confirm("Are you sure you want to leave the chat?");
+    if (confirmLeave) {
+        try {
+            const response = await fetch(`/updateLogoutStatus/${currentChatRequestId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // Removed email from the body
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                console.log('Logout status updated successfully.');
+
+                // Reset state
+                currentChatRequestId = null;
+                isRequestAccepted = false;
+                otherUserName = null;
+
+                const chatEndedMessage = document.createElement('span');
+                chatEndedMessage.textContent = 'Chat Ended';
+                chatEndedMessage.className = 'chat-ended-message'; // Add a class for styling
+                chatHistory.appendChild(chatEndedMessage);
+
+                // Hide the logout button
+                logoutButton.style.display = "none";
+                us.style.display = "none";
+
+                const req = document.getElementById('user-item');
+                if (req) {
+                    req.style.display = "flex";
+                }
+            } else {
+                console.error('Failed to update logout status.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+});
+
+
+
+
+//check if agnet has logged out
+let intervalId;
+const checkLogoutStatus = () => {
+    if (!currentChatRequestId) {
+        console.error('Error: Request ID is not available.');
+        return;
+    }
+
+    fetch(`/checkLogoutStatus/${currentChatRequestId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.loggedOut && data.email !== email && !alertShown) {
+            alertShown = true; // Set the flag to true to prevent further alerts
+
+            // Show alert and update UI
+            const chatEndedMessage = document.createElement('span');
+        chatEndedMessage.textContent = 'Chat Ended';
+        chatEndedMessage.className = 'chat-ended-message'; // Add a class for styling
+        chatHistory.appendChild(chatEndedMessage);
+            
+            // Hide the logout button
+            logoutButton.style.display = "none";
+            us.style.display = "none";
+            // Reset state
+            currentChatRequestId = null;
+            isRequestAccepted = false;
+            otherUserName = null;
+
+            const req = document.getElementById('user-item');
+            if (req) {
+                req.style.display = "flex";
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error checking logout status:', error);
+    });
+};
+
+// Poll the server every 3 seconds
+intervalId = setInterval(checkLogoutStatus, 3000);
+
+
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const reportBtn = document.getElementById('report-btn');
+    if (reportBtn) {
+        reportBtn.addEventListener('click', function() {
+            const reportContainer = document.getElementById('report-container');
+            if (reportContainer) {
+                reportContainer.style.display = 'flex';
+
+                // Add blur effect to specified elements
+                document.getElementById('chat-area').classList.add('blur');
+                document.getElementById('sidebar').classList.add('blur');
+
+                // Disable pointer events on specified elements
+                document.getElementById('sidebar').style.pointerEvents = 'none';
+                reportBtn.style.pointerEvents = 'none';
+                document.getElementById('chat-area').style.pointerEvents = 'none';
+            }
+        });
+    }
+});
+
+const closeProfileBtn = document.getElementById('close-report-btn');
+if (closeProfileBtn) {
+    closeProfileBtn.addEventListener('click', function() {
+        const reportContainer = document.getElementById('report-container');
+        if (reportContainer) {
+            // Hide profile container
+            reportContainer.style.display = 'none';
+
+            // Remove blur effect from specified elements
+            document.getElementById('chat-area').classList.remove('blur');
+            document.getElementById('sidebar').classList.remove('blur');
+
+            // Re-enable pointer events on specified elements
+            document.getElementById('sidebar').style.pointerEvents = 'auto';
+            document.getElementById('chat-area').style.pointerEvents = 'auto';
+            document.getElementById('report-btn').style.pointerEvents = 'auto';
+        }
+    });
+}
+
+// Submit report functionality
+document.getElementById('submit-report').addEventListener('click', function() {
+    let issueDescription = document.getElementById('issue-description').value;
+
+    if (issueDescription) {
+        // Insert the report into the database without sending email from client
+        fetch('/submit-report', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ description: issueDescription }) // Removed email
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Thank you for your report! We will get back to you.');
+                document.getElementById('report-container').style.display = 'none';
+                document.getElementById('chat-area').classList.remove('blur');
+                document.getElementById('sidebar').classList.remove('blur');
+
+                document.getElementById('sidebar').style.pointerEvents = 'auto';
+                document.getElementById('chat-area').style.pointerEvents = 'auto';
+                document.getElementById('report-btn').style.pointerEvents = 'auto';
+
+                document.getElementById('issue-description').value = '';
+            } else {
+                alert('There was an error submitting your report. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error submitting your report. Please try again.');
+        });
+    } else {
+        alert('Please fill in all fields before submitting.');
+    }
+});
+
+
+                 
+    </script>    
+</body>
+</html>
