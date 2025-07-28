@@ -1,4 +1,5 @@
 🩺 Health-NWU-Chatbot
+
 A smart, student-friendly chatbot that provides healthcare guidance, mental wellness support, and service navigation for users at North-West University (NWU).
 
 📄 Description
